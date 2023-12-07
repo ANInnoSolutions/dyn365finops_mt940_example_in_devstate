@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxDataEntityViewExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BankStatementLineEntity.ITVTMT940</Name>
+	<DataSources />
+	<FieldGroupExtensions />
+	<FieldGroups />
+	<FieldModifications />
+	<Fields>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940GVCCode</Name>
+			<DataField>ITVTMT940GVCCode</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField00</Name>
+			<DataField>ITVTMT940KeyField00</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField10</Name>
+			<DataField>ITVTMT940KeyField10</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField20</Name>
+			<DataField>ITVTMT940KeyField20</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField21</Name>
+			<DataField>ITVTMT940KeyField21</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField22</Name>
+			<DataField>ITVTMT940KeyField22</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField23</Name>
+			<DataField>ITVTMT940KeyField23</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField24</Name>
+			<DataField>ITVTMT940KeyField24</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField25</Name>
+			<DataField>ITVTMT940KeyField25</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField26</Name>
+			<DataField>ITVTMT940KeyField26</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField27</Name>
+			<DataField>ITVTMT940KeyField27</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField28</Name>
+			<DataField>ITVTMT940KeyField28</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField29</Name>
+			<DataField>ITVTMT940KeyField29</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField30</Name>
+			<DataField>ITVTMT940KeyField30</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField31</Name>
+			<DataField>ITVTMT940KeyField31</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField32</Name>
+			<DataField>ITVTMT940KeyField32</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField33</Name>
+			<DataField>ITVTMT940KeyField33</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField34</Name>
+			<DataField>ITVTMT940KeyField34</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField60</Name>
+			<DataField>ITVTMT940KeyField60</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField61</Name>
+			<DataField>ITVTMT940KeyField61</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField62</Name>
+			<DataField>ITVTMT940KeyField62</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTMT940KeyField63</Name>
+			<DataField>ITVTMT940KeyField63</DataField>
+			<DataSource>BankStmtISOReportEntry</DataSource>
+		</AxDataEntityViewField>
+	</Fields>
+	<Mappings />
+	<PropertyModifications />
+	<Relations />
+</AxDataEntityViewExtension>
