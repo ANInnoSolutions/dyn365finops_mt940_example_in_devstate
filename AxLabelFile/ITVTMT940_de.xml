@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxLabelFile xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940_de</Name>
+	<LabelContentFileName>ITVTMT940.de.label.txt</LabelContentFileName>
+	<LabelFileId>ITVTMT940</LabelFileId>
+	<Language>de</Language>
+	<RelativeUriInModelStore>ITVTMT940\ITVTMT940\AxLabelFile\LabelResources\de\ITVTMT940.de.label.txt</RelativeUriInModelStore>
+</AxLabelFile>

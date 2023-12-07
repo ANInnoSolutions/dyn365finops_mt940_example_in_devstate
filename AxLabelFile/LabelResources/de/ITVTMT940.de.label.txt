@@ -1,0 +1,2 @@
+﻿NewLabel0=Label files created on 03/23/2021 03:11:44 for label file Id ITVTMT940 and language de
+ ;Label file comment - see above label
