@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankAccountTable</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVTMT940BankAccountTable
+/// </summary>
+public class ITVTMT940BankAccountTable extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>find</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find <c>ITVTMT940BankAccountTable</c>-record by <c>BankAccountID</c>
+    /// </summary>
+    /// <param name = "_bankAccountId"><c>BankAccountID</c> to find a record for</param>
+    /// <returns><c>ITVTMT940BankAccountTable</c>-record</returns>
+    public static ITVTMT940BankAccountTable find(BankAccountID _bankAccountId, boolean _forUpdate = false)
+    {
+        ITVTMT940BankAccountTable bankAccountTable;
+
+        if (_forUpdate)
+        {
+            bankAccountTable.selectForUpdate(_forUpdate);
+        }
+
+        select 
+            firstonly   bankAccountTable 
+            where       bankAccountTable.BankAccountId == _bankAccountId;
+        
+        return bankAccountTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findByBankStmtISOAccStmtRecId</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find <c>ITVTMT940BankAccountTable</c>-record by <c>BankStmtISOAccStmt</c>-RecId
+    /// </summary>
+    /// <param name = "_accountStmt"><c>RecId</c> of <c>BankStmtISOAccStmt</c></param>
+    /// <returns><c>ITVTMT940BankAccountTable</c></returns>
+    public static ITVTMT940BankAccountTable findByBankStmtISOAccStmtRecId(RecId _accountStmt)
+    {
+        
+        ITVTMT940BankAccountTable bankAccountTable;
+        BankStmtISOAccountStatement accountStmt;
+
+        select firstonly
+            bankAccountTable
+        join 
+            accountStmt
+        where
+            accountStmt.RecId               == _accountStmt                   &&
+            bankAccountTable.BankAccountId  == accountStmt.BankAccountTable;
+        
+        return bankAccountTable;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@ITVTMT940:MT940BankAccountTableDevDoc</DeveloperDocumentation>
+	<Label>@ITVTMT940:MT940BankAccountTable</Label>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TitleField1>BankAccountID</TitleField1>
+	<TitleField2>ProcessMT940</TitleField2>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>IgnoreForProcessing</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>JournalCreationAfterImportEnabled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>JournalProcessingEnabled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ProcessMT940</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SearchByBusinessPartnerAndReferences</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SearchByConfigurationTables</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SearchOnlyByReferences</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UseExtendedSearch</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankJournalSettled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CustJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CustJournalSettled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>VendJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>VendJournalSettled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UnkownJournal</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>BankJournalSettings</Name>
+			<Label>@ITVTMT940:BankJournalSettings</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>BankJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankJournalSettled</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>CustJournalSettings</Name>
+			<Label>@ITVTMT940:CustJournalSettings</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>CustJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CustJournalSettled</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>VendJournalStettings</Name>
+			<Label>@ITVTMT940:VendJournalSettings</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>VendJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>VendJournalSettled</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>UnknownJournalSettings</Name>
+			<Label>@ITVTMT940:UnknownJournalSettings</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>UnkownJournal</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankAccountID</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ProcessingSettings</Name>
+			<Label>@ITVTMT940:ProcessingSettings</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>IgnoreForProcessing</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>JournalCreationAfterImportEnabled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>JournalProcessingEnabled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ProcessMT940</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>SearchSettings</Name>
+			<Label>@ITVTMT940:SearchSettings</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>SearchByBusinessPartnerAndReferences</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SearchByConfigurationTables</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SearchOnlyByReferences</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UseExtendedSearch</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>BankAccountID</Name>
+			<ExtendedDataType>BankAccountID</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>IgnoreForProcessing</Name>
+			<ExtendedDataType>ITVTMT940IgnoreForProcessing</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>JournalCreationAfterImportEnabled</Name>
+			<ExtendedDataType>ITVTMT940JournalCreationAfterImportEnabled</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>JournalProcessingEnabled</Name>
+			<ExtendedDataType>ITVTMT940JournalProcessingEnabled</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ProcessMT940</Name>
+			<ExtendedDataType>ITVTMT940ProcessMT940</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>SearchByBusinessPartnerAndReferences</Name>
+			<ExtendedDataType>ITVTMT940SearchByBusinessPartnerAndReferences</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>SearchByConfigurationTables</Name>
+			<ExtendedDataType>ITVTMT940SearchByConfigurationTables</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>SearchOnlyByReferences</Name>
+			<ExtendedDataType>ITVTMT940SearchOnlyByReferences</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>UseExtendedSearch</Name>
+			<ExtendedDataType>ITVTMT940UseExtendedSearch</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>BankJournalOpen</Name>
+			<ExtendedDataType>ITVTMT940BankJournalOpen</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>BankJournalSettled</Name>
+			<ExtendedDataType>ITVTMT940BankJournalSettled</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>CustJournalOpen</Name>
+			<ExtendedDataType>ITVTMT940CustJournalOpen</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>CustJournalSettled</Name>
+			<ExtendedDataType>ITVTMT940CustJournalSettled</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>VendJournalOpen</Name>
+			<ExtendedDataType>ITVTMT940VendJournalOpen</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>VendJournalSettled</Name>
+			<ExtendedDataType>ITVTMT940VendJournalSettled</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>UnkownJournal</Name>
+			<ExtendedDataType>ITVTMT940UnkownJournal</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<Relations>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>BankAccountTable</Name>
+			<Cardinality>ExactlyOne</Cardinality>
+			<CreateNavigationPropertyMethods>Yes</CreateNavigationPropertyMethods>
+			<OnDelete>CascadeRestricted</OnDelete>
+			<RelatedTable>BankAccountTable</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelationshipType>Aggregation</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>BankAccountID</Name>
+					<Field>BankAccountID</Field>
+					<RelatedField>AccountID</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankStmtAssignHistoryLine</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTMT940BankStmtAssignHistoryLine extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>findRecId</Name>
+				<Source><![CDATA[
+    public static ITVTMT940BankStmtAssignHistoryLine findRecId(RecId _recId, boolean _forUpdate = false)
+    {
+        ITVTMT940BankStmtAssignHistoryLine assignmentLine;
+
+        if (_forUpdate)
+        {
+            assignmentLine.selectForUpdate(_forUpdate);
+        }
+
+        select firstonly
+            assignmentLine
+        where
+            assignmentLine.RecId == _recId;
+
+        return assignmentLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addNewLineFromBankStatement</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///
+    /// </summary>
+    public void addNewLineFromBankStatement()
+    {
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateLineFromBankStatement</Name>
+				<Source><![CDATA[
+    public void updateLineFromBankStatement()
+    {
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateLineFromOpenItem</Name>
+				<Source><![CDATA[
+    public void updateLineFromOpenItem()
+    {
+
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TitleField1>ProcessingStatus</TitleField1>
+	<TitleField2>NumOfTransactions</TitleField2>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtISOReportEntry</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtAssignHistTable</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ProcessingStatus</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtISOAccStmt</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TransactionMatched</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LedgerTransDirection</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TransactionModule</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ReferenceLinesCreated</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>NumOfTransactions</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CustTableRecId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>VendTableRecId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TransactionMatchedFor</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TransactionMatchedBy</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SearchStatusBusinessPartner</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SearchStatusOpenTransaction</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>BankStmtISOReportEntry</Name>
+			<ExtendedDataType>ITVTMT940BankStmtISOReportEntryRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>BankStmtAssignHistTable</Name>
+			<ExtendedDataType>ITVTMT940BankStmtAssignHistTableRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ProcessingStatus</Name>
+			<EnumType>ITVTMT940ProcessingStatus</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>BankStmtISOAccStmt</Name>
+			<ExtendedDataType>ITVTMT940BankStmtISOAccStmtRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>TransactionMatched</Name>
+			<ExtendedDataType>ITVTMT940TransactionMatched</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>LedgerTransDirection</Name>
+			<EnumType>ITVTMT940LedgerTransDirection</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>TransactionModule</Name>
+			<EnumType>ITVTMT940TransactionModule</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ReferenceLinesCreated</Name>
+			<ExtendedDataType>ITVTMT940ReferenceLinesCreated</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>NumOfTransactions</Name>
+			<ExtendedDataType>ITVTMT940NumOfTransactions</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>CustTableRecId</Name>
+			<ExtendedDataType>IVTTMT940CustTableRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>VendTableRecId</Name>
+			<ExtendedDataType>ITVTMT940VendTableRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>TransactionMatchedFor</Name>
+			<EnumType>ITVTMT940TransactionMatchedFor</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>TransactionMatchedBy</Name>
+			<EnumType>ITVTMT940TransactionMatchedBy</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>SearchStatusBusinessPartner</Name>
+			<EnumType>ITVTMT940SearchStatusBusinessPartner</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>SearchStatusOpenTransaction</Name>
+			<EnumType>ITVTMT940SearchStatusOpenTransaction</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<Relations />
+	<StateMachines />
+</AxTable>

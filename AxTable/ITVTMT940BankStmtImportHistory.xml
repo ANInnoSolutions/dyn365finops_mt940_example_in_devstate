@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankStmtImportHistory</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTMT940BankStmtImportHistory extends common
+{
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getImportHistoryId</Name>
+				<Source><![CDATA[
+    public static ITVTMT940ImportHistoryId getImportHistoryId()
+    {
+        /*
+        NumberSeq numSeq;
+        NevoiTechId id;
+        ttsbegin;
+        numSeq = NumberSeq::newGetNum(NumberSeqModuleNevoiTech::numRefNevoiTechId());
+        id = numSeq.num();
+        ttscommit;
+        info(strFmt("%1", id));
+        */
+        return NumberSeq::newGetNum(ITVTMT940ModuleNumberSequences::numRefImportHistoryId()).num();
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>journalsAreCreated</Name>
+				<Source><![CDATA[
+    public boolean journalsAreCreated()
+    {
+        return (this.BankJournalOpen != '' && this.BankJournalSettled != '' &&
+                this.CustJournalOpen != '' && this.CustJournalSettled != '' &&
+                this.VendJournalOpen != '' && this.VendJournalSettled != '');
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TitleField1>ImportHistoryId</TitleField1>
+	<TitleField2>CreationDate</TitleField2>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ImportHistoryId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>MessageIdentification</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>FormatName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>FormatVersion</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankJournalSettled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CustJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CustJournalSettled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>VendJournalOpen</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>VendJournalSettled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CreationDate</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ImportHistoryId</Name>
+			<ExtendedDataType>ITVTMT940ImportHistoryId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>MessageIdentification</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>BankStmtISOMax500Text</ExtendedDataType>
+			<Label>@GLS221244</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>FormatName</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>BankStmtISOMax500Text</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>FormatVersion</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>BankStatementIdentificationText</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>BankJournalOpen</Name>
+			<ExtendedDataType>ITVTMT940BankJournalOpen</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>BankJournalSettled</Name>
+			<ExtendedDataType>ITVTMT940BankJournalSettled</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>CustJournalOpen</Name>
+			<ExtendedDataType>ITVTMT940CustJournalOpen</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>CustJournalSettled</Name>
+			<ExtendedDataType>ITVTMT940CustJournalSettled</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>VendJournalOpen</Name>
+			<ExtendedDataType>ITVTMT940VendJournalOpen</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>VendJournalSettled</Name>
+			<ExtendedDataType>ITVTMT940VendJournalSettled</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>CreationDate</Name>
+			<ExtendedDataType>ITVTMT940CreationDate</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<Relations />
+	<StateMachines />
+</AxTable>

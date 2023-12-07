@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankStmtAssignHistoryTable</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTMT940BankStmtAssignHistoryTable extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>updateStmtValidationStatus</Name>
+				<Source><![CDATA[
+    // Needed?
+    public void updateStmtValidationStatus()
+    {
+        this.setStmtValidationStatus(BankStmtISOAccountStatement::find(this.BankStmtISOAccStmt).Status);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateStmtValidationStatusFromStatement</Name>
+				<Source><![CDATA[
+    public void updateStmtValidationStatusFromStatement(BankStmtISOAccountStatement _statement)
+    {
+        this.setStmtValidationStatus(_statement.Status);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setStmtValidationStatus</Name>
+				<Source><![CDATA[
+    protected void setStmtValidationStatus(BankStatementStatus _status)
+    {
+        this.BankStatementStatus = _status;
+    }
+    //
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TitleField1>IBAN</TitleField1>
+	<TitleField2>BankStatementStatus</TitleField2>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>BankStatementStatus</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SequenceNumber</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>IBAN</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SwiftNo</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RegistrationId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Identification</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankAccountTable</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtISOAccStmt</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtImpHistBankAcc</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtImpHistStmt</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>BankStmtIsoAccStmtIdentification</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtISOAccStmt</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Identification</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SequenceNumber</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BankAccountTable</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>IBAN</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SwiftNo</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RegistrationId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>BankStmtIsoAccStmtStatus</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>BankStatementStatus</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>MT940ImportHistoryRelation</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>BankStmtImpHistBankAcc</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>BankStatementStatus</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>ITVTMT940BankStatementStatus</ExtendedDataType>
+			<EnumType>BankStatementStatus</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>SequenceNumber</Name>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>BankStmtISOMax15NumericText</ExtendedDataType>
+			<Label>@SYS2658</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>IBAN</Name>
+			<AosAuthorization>Yes</AosAuthorization>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>BankIBAN</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>SwiftNo</Name>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>SWIFTNo</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RegistrationId</Name>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>BankRegNum</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>Identification</Name>
+			<AssetClassification>System Metadata</AssetClassification>
+			<ExtendedDataType>BankStatementId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>BankAccountTable</Name>
+			<AllowEdit>No</AllowEdit>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>CompanyBankAccountId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>BankStmtISOAccStmt</Name>
+			<ExtendedDataType>ITVTMT940BankStmtISOAccStmtRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>BankStmtImpHistBankAcc</Name>
+			<ExtendedDataType>ITVTMT940BankStmtImpHistBankAccRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>BankStmtImpHistStmt</Name>
+			<ExtendedDataType>ITVTMT940BankStmtImpHistStmtRecId</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<Relations />
+	<StateMachines />
+</AxTable>
