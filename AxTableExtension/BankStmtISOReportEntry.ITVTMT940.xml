@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BankStmtISOReportEntry.ITVTMT940</Name>
+	<FieldGroupExtensions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>ITVTMT940PostingDescription</Name>
+			<Label>@ITVTMT940:PostingDescription</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940GVCCode</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField10</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField00</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ITVTMT940IntendedPurposeFields</Name>
+			<Label>@ITVTMT940:IntendedPurposeFields</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField20</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField21</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField22</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField23</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField24</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField25</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField26</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField27</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField28</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField29</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField60</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField61</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField62</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField63</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ITVTMT940IdentificationFields</Name>
+			<Label>@ITVTMT940:IdentificationFields</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField30</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField31</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField32</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField33</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField34</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ITVTMT940ReferenceFields</Name>
+			<Label>@ITVTMT940:ReferenceFields</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField00</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField10</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField20</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField21</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField22</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField23</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField24</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField25</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField26</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField27</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField28</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField29</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField30</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField31</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField32</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField33</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField34</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField60</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField61</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField62</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940KeyField63</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>ITVTMT940GVCCode</Name>
+			<ExtendedDataType>ITVTMT940GVCCode</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField00</Name>
+			<ExtendedDataType>ITVTMT940KeyField00</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField10</Name>
+			<ExtendedDataType>ITVTMT940KeyField10</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField20</Name>
+			<ExtendedDataType>ITVTMT940KeyField20</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField21</Name>
+			<ExtendedDataType>ITVTMT940KeyField21</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField22</Name>
+			<ExtendedDataType>ITVTMT940KeyField22</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField23</Name>
+			<ExtendedDataType>ITVTMT940KeyField23</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField24</Name>
+			<ExtendedDataType>ITVTMT940KeyField24</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField25</Name>
+			<ExtendedDataType>ITVTMT940KeyField25</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField26</Name>
+			<ExtendedDataType>ITVTMT940KeyField26</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField27</Name>
+			<ExtendedDataType>ITVTMT940KeyField27</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField28</Name>
+			<ExtendedDataType>ITVTMT940KeyField28</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField29</Name>
+			<ExtendedDataType>ITVTMT940KeyField29</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField30</Name>
+			<ExtendedDataType>ITVTMT940KeyField30</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField31</Name>
+			<ExtendedDataType>ITVTMT940KeyField31</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField32</Name>
+			<ExtendedDataType>ITVTMT940KeyField32</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField33</Name>
+			<ExtendedDataType>ITVTMT940KeyField33</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField34</Name>
+			<ExtendedDataType>ITVTMT940KeyField34</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField60</Name>
+			<ExtendedDataType>ITVTMT940KeyField60</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField61</Name>
+			<ExtendedDataType>ITVTMT940KeyField61</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField62</Name>
+			<ExtendedDataType>ITVTMT940KeyField62</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTMT940KeyField63</Name>
+			<ExtendedDataType>ITVTMT940KeyField63</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations />
+</AxTableExtension>

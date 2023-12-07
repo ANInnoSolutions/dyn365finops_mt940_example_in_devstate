@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>BankAccountTable.ITVTMT940</Name>
+	<FieldGroupExtensions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>ITVTMT940</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940JournalProcessingEnabled</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTMT940JournalCreationAfterImportEnabled</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTMT940JournalProcessingEnabled</Name>
+			<ExtendedDataType>ITVTMT940JournalProcessingEnabled</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTMT940JournalCreationAfterImportEnabled</Name>
+			<ExtendedDataType>ITVTMT940JournalCreationAfterImportEnabled</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations />
+</AxTableExtension>
