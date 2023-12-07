@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdt xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxEdtString">
+	<Name>ITVTMT940KeyField23</Name>
+	<HelpText>@ITVTMT940:Key23Description</HelpText>
+	<Label>@ITVTMT940:Key23</Label>
+	<ArrayElements />
+	<Relations />
+	<TableReferences />
+	<StringSize>27</StringSize>
+</AxEdt>

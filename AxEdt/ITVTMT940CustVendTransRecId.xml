@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdt xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxEdtInt64">
+	<Name>ITVTMT940CustVendTransRecId</Name>
+	<Extends>RefRecId</Extends>
+	<HelpText>@ITVTMT940:CustVendTransRecIdHelp</HelpText>
+	<Label>@ITVTMT940:CustVendTransRecId</Label>
+	<ArrayElements />
+	<Relations />
+	<TableReferences />
+</AxEdt>

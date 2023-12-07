@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdt xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxEdtString">
+	<Name>ITVTMT940ReferenceValue</Name>
+	<HelpText>@ITVTMT940:ReferenceValueDescription</HelpText>
+	<Label>@ITVTMT940:ReferenceValue</Label>
+	<ArrayElements />
+	<Relations />
+	<TableReferences />
+	<StringSize>65</StringSize>
+</AxEdt>

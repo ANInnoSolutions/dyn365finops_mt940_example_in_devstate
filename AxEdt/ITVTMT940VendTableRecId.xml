@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdt xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxEdtInt64">
+	<Name>ITVTMT940VendTableRecId</Name>
+	<HelpText>@ITVTMT940:VendTableRecIdHelp</HelpText>
+	<Label>@ITVTMT940:VendTableRecId</Label>
+	<ArrayElements />
+	<Relations />
+	<TableReferences />
+</AxEdt>
