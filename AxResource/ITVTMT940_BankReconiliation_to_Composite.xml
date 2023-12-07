@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxResource xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940_BankReconiliation_to_Composite</Name>
+	<FileName>ITVTMT940_BankReconiliation-to-Composite.xslt</FileName>
+	<RelativeUriInModelStore>ITVTMT940\ITVTMT940\AxResource\ResourceContent\Data\ITVTMT940_BankReconiliation-to-Composite.xslt</RelativeUriInModelStore>
+	<TypeOfResource>Data</TypeOfResource>
+</AxResource>

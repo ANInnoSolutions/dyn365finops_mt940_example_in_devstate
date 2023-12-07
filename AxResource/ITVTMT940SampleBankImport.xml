@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxResource xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940SampleBankImport</Name>
+	<FileName>SampleBankCompositeEntity_ITVT.xml</FileName>
+	<RelativeUriInModelStore>ITVTMT940\ITVTMT940\AxResource\ResourceContent\XmlDoc\SampleBankCompositeEntity_ITVT.xml</RelativeUriInModelStore>
+	<TypeOfResource>XmlDoc</TypeOfResource>
+</AxResource>
