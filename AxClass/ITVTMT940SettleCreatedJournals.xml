@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940SettleCreatedJournals</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVTMT940 class with settlement logic. Use this class to do all logic to settle open transaction with new created journal line.
+/// </summary>
+class ITVTMT940SettleCreatedJournals
+{
+    ITVTMT940Parameters             mt940Parameters;
+    ITVTMT940BankStmtImportHistory  importHistory;
+
+    RecordInsertList                settledTransactions;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>processSettlementsForJournals</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Proceed the settlement logic for every entry in <c>List</c> with import history entries
+    /// </summary>
+    /// <param name = "_importHistoryList"><c>List</c> of type <c>ITVTMT940BankStmtImportHistory</c>to proceed</param>
+    public void processSettlementsForJournals(List _importHistoryList)
+    {
+        mt940Parameters             = ITVTMT940Parameters::find();
+        settledTransactions         = new RecordInsertList(tableNum(ITVTMT940BankStmtAssignHistoryLineSettlement));
+        ListEnumerator enumerator   = _importHistoryList.getEnumerator();
+
+        while (enumerator.moveNext())
+        {
+            importHistory = enumerator.current();
+
+            // If parameters are set to create one Journal for the complete Import
+            this.findAssignmentLinesForImportHistory();
+
+            // If parameters are set to create one Journal for all Stetements withhin one BankAccount
+
+
+            // If parameters are set to create one Journal for every single Statement
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findAssignmentLinesForImportHistory</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find all assignment lines related to the actual <c>ITVTMT940BankStmtImportHistory</c>-record
+    /// </summary>
+    protected void findAssignmentLinesForImportHistory()
+    {
+        ITVTMT940BankStmtImportHistory              importHistoryQ;
+        ITVTMT940BankStmtImportHistoryBankAccount   importBankAcc;
+        ITVTMT940BankStmtImportHistoryStatement     importStmt;
+        ITVTMT940BankStmtAssignHistoryTable         assignTable;
+        ITVTMT940BankStmtAssignHistoryLine          assignLine;
+
+        // Do logic to get AssignemtLines and run settlement
+        while
+            select
+                *
+            from
+                assignLine
+            join
+                assignTable
+            where
+                assignLine.BankStmtAssignHistTable == assignTable.RecId
+            join
+                importStmt
+            where
+                assignTable.BankStmtImpHistStmt == importStmt.RecId
+            join
+                importBankAcc
+            where
+                importStmt.BankStmtImpHistBankAcc == importBankAcc.RecId
+            join
+                importHistoryQ
+            where
+                importBankAcc.BankStmtImportHistory == importHistoryQ.RecId &&
+                importHistoryQ.RecId                == importHistory.RecId
+        {
+            this.findRelatedJournalLinesForAssignmenLine(assignLine);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findRelatedJournalLinesForAssignmenLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find all related journal lines to the related assignment line given as parameter
+    /// </summary>
+    /// <param name = "_assingLine"><c>ITVTMT940BankStmtAssignHistoryLine</c>-record to find journal lines for</param>
+    protected void findRelatedJournalLinesForAssignmenLine(
+        ITVTMT940BankStmtAssignHistoryLine _assingLine)
+    {
+        ITVTMT940BankStmtAssignHistoryLine                      assignLine;
+        ITVTMT940BankStmtISOReportEntryOpenTransactions         openTransaction;
+
+        ITVTMT940BankStmtISOReportEntryJournalLines reportJourLine =
+            ITVTMT940BankStmtISOReportEntryJournalLines::findAssignmentLine(_assingLine.RecId);
+
+        LedgerJournalTrans  ledgJourTrans = LedgerJournalTrans::findRecId(reportJourLine.LedgerJournalTransRecId, false);
+        
+        CustVendOpenTransManager manager = CustVendOpenTransManager::construct(ledgJourTrans);
+        
+        while 
+            select 
+                * 
+            from 
+                openTransaction
+            where
+                openTransaction.BankStmtAssignHistLineRecId == _assingLine.RecId
+        {
+            CustVendTransOpen   custVendTransOpen = this.getCustVendTransOpenForAssignmentLine(openTransaction);
+
+            manager.updateTransMarked(CustVendTransOpen, true);
+
+            ITVTMT940BankStmtAssignHistoryLineSettlement settlement;
+
+            settlement.BankStmtAssignHistLineRecId  = _assingLine.RecId;
+            settlement.CustVendTransOpenRecId       = custVendTransOpen.RefRecId;
+            settlement.LedgerJournalTransRecId      = ledgJourTrans.RecId;
+            settlement.TransactionModule            = openTransaction.TransactionModule;
+
+            settledTransactions.add(settlement);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getCustVendTransOpenForAssignmentLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Get <c>CustVendTransOpen</c> for settlement
+    /// </summary>
+    /// <param name = "_openTransaction"><c>ITVTMT940BankStmtISOReportEntryOpenTransactions</c>- record for settlement</param>
+    /// <returns><c>CustVendTransOpen</c>-record</returns>
+    protected CustVendTransOpen getCustVendTransOpenForAssignmentLine(
+        ITVTMT940BankStmtISOReportEntryOpenTransactions _openTransaction)
+    {
+        CustVendTransOpen                               custVendTransOpen;
+        TableId                                         tableId;
+
+        if (_openTransaction.TransactionModule == ITVTMT940TransactionModule::Cust)
+        {
+            tableId = tableNum(CustTrans);
+        }
+        else
+        {
+            tableId = tableNum(VendTrans);
+        }
+
+        custVendTransOpen = CustVendTransOpen::findRefId(tableId, _openTransaction.CustVendTransRecId);
+
+        return custVendTransOpen;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setSettlementForJournalLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Do the settlement
+    /// </summary>
+    /// <param name = "_manager"><c>CustVendOpenTransManager</c></param>
+    /// <param name = "_custVendTransOpen"><c>CustVendTransOpen</c></param>
+    protected void setSettlementForJournalLine(
+        CustVendOpenTransManager    _manager,
+        CustVendTransOpen           _custVendTransOpen)
+    {
+        _manager.updateTransMarked(_custVendTransOpen, true);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940CreateProcessingDataStructure</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVTMT940
+/// This class creates the processing data structure which can be used to verfiy the state of an entry.
+/// The data structure can be used to verivy a state for an entry to decide possible steps to do.
+/// </summary>
+class ITVTMT940CreateProcessingDataStructure
+{
+    List    createdImportHistory;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>processImportedBankAccounts</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Process the creation of processing data structure with information of the bank account
+    /// </summary>
+    /// <param name = "_importedBankAccounts"><c>List</c> of <c>BankStatementImportData</c>-Instances</param>
+    /// <returns><c>List</c> with records of <c>ITVTMT940BankStmtImportHistory</c></returns>
+    public List processImportedBankAccounts(List _importedBankAccounts)
+    {
+        ListEnumerator                  enumerator;
+        ITVTMT940BankStmtImportHistory  importHistory;
+
+        createdImportHistory = new List(Types::Record);
+        // ToDo: Transaction
+        try
+        {
+            ttsbegin;
+
+            importHistory = this.createEntryInBankStmtImportHistory();
+            createdImportHistory.addEnd(importHistory);
+
+            enumerator = _importedBankAccounts.getEnumerator();
+
+            while (enumerator.moveNext())
+            {
+                BankStatementImportData importData = enumerator.current();
+
+                ITVTMT940BankStmtImportHistoryBankAccount importHistoryBankAccount =
+                    this.createEntryInBankStmtImportHistoryBankAccount(importData.parmBankAccountTable(), importHistory.RecId);
+
+                this.processImportedBankStatements(
+                    importData.parmBankAccountTable(), 
+                    importData.parmImportedStatements(),
+                    importHistoryBankAccount.RecId);
+
+            }
+
+            ttscommit;
+
+            // Erstellung der Journale anstoßen Iteration über die erstellten History Einträge
+            //bankAccountTable.isMT940JournalCreationAfterImport();
+        }
+        catch
+        {
+            Error("@ITVTMT940:ErrorWhileCreatingMT940DataStructure");
+        }
+
+        return createdImportHistory;
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createEntryInBankStmtImportHistory</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Create new entrys for <c>ITVTMT940BankStmtImportHistory</c>
+    /// </summary>
+    /// <returns><c>ITVTMT940BankStmtImportHistory</c>-record</returns>
+    protected ITVTMT940BankStmtImportHistory createEntryInBankStmtImportHistory()
+    {
+        //BankStmtISOAccountStatement bankStatement   = _bankStatement;
+        //BankStmtISODocument         bankDocument    = this.getBankStmtISODocument(_bankStatement.BankStmtISODocument);
+        //BankStmtISOGroupHeader      groupHeader     = this.getBankStmtISOGroupHeader(_bankStatement.BankStmtISODocument);
+        
+        //importHistory.MessageIdentification = groupHeader.MessageIdentification;
+        //importHistory.FormatName            = bankDocument.FormatName;
+        //importHistory.FormatVersion         = bankDocument.FormatVersion;
+
+        ITVTMT940BankStmtImportHistory importHistory;
+
+        importHistory.ImportHistoryId   = ITVTMT940BankStmtImportHistory::getImportHistoryId();
+        importHistory.CreationDate      = DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone());
+
+        importHistory.insert();
+
+        return importHistory;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createEntryInBankStmtImportHistoryBankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates a new entry in <c>ITVTMT940BankStmtImportHistoryBankAccount</c>
+    /// </summary>
+    /// <param name = "_bankAccount"><c>BankAccountTable</c>-record</param>
+    /// <param name = "_importHistory"><c>RecId</c> for related <c>ITVTMT940BankStmtImportHistory</c>-record</param>
+    /// <returns><c>ITVTMT940BankStmtImportHistoryBankAccount</c>-record</returns>
+    protected ITVTMT940BankStmtImportHistoryBankAccount createEntryInBankStmtImportHistoryBankAccount(
+        BankAccountTable    _bankAccount, 
+        RefRecId            _importHistory)
+    {
+        ITVTMT940BankStmtImportHistoryBankAccount importHistoryBankAccount;
+
+        importHistoryBankAccount.AccountID              = _bankAccount.AccountID;
+        importHistoryBankAccount.BankStmtImportHistory  = _importHistory;
+
+        importHistoryBankAccount.insert();
+
+        return importHistoryBankAccount;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processImportedBankStatements</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Run over imported bank staments and create a new entries in <c>ITVTMT940BankStmtImportHistoryStatement</c>.
+    /// Validate and startand run method for <c>ITVTMT940BankStmtAssignHistoryLine</c>-creation.
+    /// </summary>
+    /// <param name = "_bankAccountTable"><c>BankAccountTable</c> with new statements</param>
+    /// <param name = "_listOfStmtIds"><c>List</c> of new <c>BankStatementId</c>s</param>
+    /// <param name = "_importHistoryBankAccRecId"><c>RecId</c>from related <c>ITVTMT940BankStmtImportHistoryBankAccount</c> -record</param>
+    protected void processImportedBankStatements(BankAccountTable _bankAccountTable, List _listOfStmtIds, RecId _importHistoryBankAccRecId)
+    {
+        boolean             isStatementValidated;
+
+        BankAccountTable    bankAccountTable    = _bankAccountTable;
+        List                listOfStatementIds  = _listOfStmtIds;
+        ListEnumerator      statementEnumerator = listOfStatementIds.getEnumerator();
+
+
+        changecompany(bankAccountTable.company())
+        {
+                
+            if (bankAccountTable.isMT940JournalProcessingEnabled())
+            {
+                ttsbegin;
+                
+                isStatementValidated = true; // Needed?
+
+                while (statementEnumerator.moveNext())
+                {
+                    // Remark: Only one StamentId without Sequencenumber are in Arg
+                    BankStatementId             statementId = statementEnumerator.current();
+                    BankStmtISOAccountStatement statement   = 
+                        BankStmtISOAccountStatement::findByBankAccountAndStatementId(bankAccountTable.AccountID, statementId);
+                        
+                    // Add Entry in BankStatementAssignmentHistoryTable
+                    ITVTMT940BankStmtImportHistoryStatement histStatement = 
+                        this.createEntryInBankStmtImportHistoryStatement(statement, _importHistoryBankAccRecId);
+                        
+                    if (!BankStatementValidate::processValidate(statement.RecId))
+                    {
+                        isStatementValidated = false;
+                        histStatement.updateStmtValidationStatusFromStatement(statement);
+                        break;
+                    }
+                    else
+                    {
+                        // Add Entrys in BankStatementAssignmentHistoryLine
+                        this.createEntrysForAssignmentHistoryTableAndLines(statementId, histStatement.RecId);
+                    }
+                }
+                    
+                ttscommit;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createEntryInBankStmtImportHistoryStatement</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Create new entry in <c>ITVTMT940BankStmtImportHistoryStatement</c>
+    /// </summary>
+    /// <param name = "statement"><c>BankStmtISOAccountStatement</c>-record</param>
+    /// <param name = "_importHistoryBankAcc"><c>RecId</c> from releated <c>ITVTMT940BankStmtImportHistoryBankAccount</c></param>
+    /// <returns><c>ITVTMT940BankStmtImportHistoryStatement</c>-record</returns>
+    protected ITVTMT940BankStmtImportHistoryStatement createEntryInBankStmtImportHistoryStatement(
+        BankStmtISOAccountStatement statement, 
+        RecId                       _importHistoryBankAcc)
+    {
+        ITVTMT940BankStmtImportHistoryStatement histStatement;
+
+        histStatement.BankStmtImpHistBankAcc = _importHistoryBankAcc;
+
+        histStatement.insert();
+
+        return histStatement;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createEntrysForAssignmentHistoryTableAndLines</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Run creation for entries in <c>ITVTMT940BankStmtAssignHistoryTable</c> and <c>ITVTMT940BankStmtAssignHistoryTable</c>
+    /// </summary>
+    /// <param name = "_statementId"><c>BankStatementId</c></param>
+    /// <param name = "_importHistoryStatement"><c>RecId</c> of related <c>ITVTMT940BankStmtImportHistoryStatement</C>-record</param>
+    protected void createEntrysForAssignmentHistoryTableAndLines(BankStatementId _statementId, RecId _importHistoryStatement)
+    {
+        //RecId                       importHistory = _importHistory;
+        
+        BankStmtISOAccountStatement statement;
+        BankStmtISOReportEntry      entry;
+
+        RecId                       historyTable;
+        BankStatementId             actualStatementId;
+        BankStmtISOMax15NumericText actualSequenceNumber;
+
+        while select * 
+            from 
+                entry 
+            join 
+                statement
+            order by 
+                statement.Identification, statement.SequenceNumber
+            where 
+                entry.BankStmtISOAccountStatement   == statement.RecId &&
+                statement.Identification            == _statementId
+        {
+            if (actualStatementId != statement.Identification && actualSequenceNumber != statement.SequenceNumber)
+            {
+                actualStatementId       = statement.Identification;
+                actualSequenceNumber    = statement.SequenceNumber;
+
+                historyTable = this.createEntryInHistAssignTable(statement, _importHistoryStatement).RecId;
+            }
+                        
+            this.createEntryInHistAssignLine(entry, statement.RecId, historyTable);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createEntryInHistAssignTable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Create new entry in <c>ITVTMT940BankStmtAssignHistoryTable</c>
+    /// </summary>
+    /// <param name = "_statement">
+    /// <c>BankStmtISOAcoountStatement</c>record to create a <c>ITVTMT940BankStmtAssignHistoryTable</c>-record for.
+    /// </param>
+    /// <param name = "_importHistoryStatementRecId"><c>ITVTMT940BankStmtImportHistory</c>-RecId</param>
+    /// <returns>Created <c>ITVTMT940BankStmtAssignHistoryTable</c>-record</returns>
+    protected ITVTMT940BankStmtAssignHistoryTable createEntryInHistAssignTable(
+        BankStmtISOAccountStatement _statement, 
+        RecId                       _importHistoryStatementRecId)
+    {
+        ITVTMT940BankStmtAssignHistoryTable historyTable;
+
+        historyTable.BankStmtISOAccStmt     = _statement.RecId;
+        historyTable.BankStmtImpHistStmt    = _importHistoryStatementRecId;
+
+        historyTable.Identification         = _statement.Identification;
+        historyTable.SequenceNumber         = _statement.SequenceNumber;
+        historyTable.BankAccountTable       = _statement.BankAccountTable;
+
+        // ToDo: Start - Needed or set per display method
+        historyTable.IBAN                   = _statement.IBAN;
+        historyTable.SwiftNo                = _statement.SwiftNo;
+        historyTable.RegistrationId         = _statement.RegistrationId;
+        // Stop
+
+        historyTable.BankStatementStatus    = _statement.Status;
+
+        historyTable.insert();
+
+        return historyTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createEntryInHistAssignLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Create entry in <c>ITVTMT940BankStmtAssignHistoryLine</c>
+    /// </summary>
+    /// <param name = "_entry"><c>BankStmtISOReportEntry</c>record to create the entry for</param>
+    /// <param name = "_statement"><c>BankStmtISOAccountStatement</c>-RecId of releated bank statement</param>
+    /// <param name = "_histTable"><c>ITVTMT940BankStmtAssignHistoryTable</c>-rECiD</param>
+    protected void createEntryInHistAssignLine(BankStmtISOReportEntry _entry, RecId _statement, RecId _histTable)
+    {
+        // RecordInsertList
+        ITVTMT940BankStmtAssignHistoryLine historyLine;
+
+        historyLine.BankStmtAssignHistTable = _histTable;
+        historyLine.BankStmtISOAccStmt      = _statement;
+
+        historyLine.BankStmtISOReportEntry  = _entry.RecId;
+
+        historyLine.ProcessingStatus        = ITVTMT940ProcessingStatus::HistoryLineCreated;
+        historyLine.LedgerTransDirection    = ITVTMT940LedgerTransDirection::Unknown;
+        historyLine.TransactionMatched      = NoYes::No;
+        historyLine.TransactionModule       = ITVTMT940TransactionModule::None;
+
+        historyLine.insert();
+    }
+
+    // Helper Methods
+
+    /*
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name = "_BankStmtISODocumentRecId"></param>
+    /// <returns></returns>
+    protected BankStmtISODocument getBankStmtISODocument(RecId _BankStmtISODocumentRecId)
+    {
+        return BankStmtISODocument::find(_BankStmtISODocumentRecId);
+    }
+
+    protected BankStmtISOGroupHeader getBankStmtISOGroupHeader(RecId _BankStmtISODocumentRecId)
+    {
+        return BankStmtISOGroupHeader::find(BankStmtISODocument::find(_BankStmtISODocumentRecId).GroupHeader);
+    }
+    */
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

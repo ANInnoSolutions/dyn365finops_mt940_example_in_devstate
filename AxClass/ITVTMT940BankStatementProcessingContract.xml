@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankStatementProcessingContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940 Contract class to transfer parameters from <c>BankStatementImportBatch</c> to 
+/// <c>ITVTMT940BankStatementProcessingService</c>
+/// </summary>
+class ITVTMT940BankStatementProcessingContract
+{
+    protected ITVTMT940ProcessMT940         processMT940;
+    protected ITVTMT940FindBusinessPartner  findBusinessPartner;
+    protected ITVTMT940FindOpenTransactions findOpenTransactions;
+    protected ITVTMT940CreateJournals       createJournals;
+    protected ITVTMT940SettleTransactions   settleTransactions;
+    protected ITVTMT940PostJournals         postJournals;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmProcessMT940</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets processMT940-Instancevariable of type <c>ITVTMT940ProcessMT940</c>
+    /// </summary>
+    /// <param name = "_processMT940">
+    /// New value of type <c>ITVTMT940ProcessMT940</c> for processMT940 which should be set;
+    /// otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940ProcessMT940</c> in processMT940
+    /// </returns>
+    [DataMemberAttribute]
+    public ITVTMT940ProcessMT940 parmProcessMT940(
+        ITVTMT940ProcessMT940 _processMT940 = processMT940)
+    {
+        processMT940 = _processMT940;
+
+        return processMT940;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmFindBusinessPartner</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets findBusinessPartner-Instancevariable of type <c>ITVTMT940FindBusinessPartner</c>
+    /// </summary>
+    /// <param name = "_findBusinessPartner">
+    /// New value of type <c>ITVTMT940FindBusinessPartner</c> for findBusinessPartner
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940FindBusinessPartner</c> in findBusinessPartner
+    /// </returns>
+    [DataMemberAttribute]
+    public ITVTMT940FindBusinessPartner parmFindBusinessPartner(
+        ITVTMT940FindBusinessPartner _findBusinessPartner = findBusinessPartner)
+    {
+        findBusinessPartner = _findBusinessPartner;
+
+        return findBusinessPartner;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmFindOpenTransactions</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets findOpenTransactions-Instancevariable of type <c>ITVTMT940FindOpenTransactions</c>
+    /// </summary>
+    /// <param name = "_findOpenTransactions">
+    /// New value of type <c>ITVTMT940FindOpenTransactions</c> for findOpenTransactions
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940FindOpenTransactions</c> in findOpenTransactions
+    /// </returns>
+    [DataMemberAttribute]
+    public ITVTMT940FindOpenTransactions parmFindOpenTransactions(
+        ITVTMT940FindOpenTransactions _findOpenTransactions = findOpenTransactions)
+    {
+        findOpenTransactions = _findOpenTransactions;
+
+        return findOpenTransactions;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCreateJournals</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets createJournals-Instancevariable of type <c>ITVTMT940CreateJournals</c>
+    /// </summary>
+    /// <param name = "_createJournals">
+    /// New value of type <c>ITVTMT940CreateJournals</c> for createJournals
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940CreateJournals</c> in createJournals
+    /// </returns>
+    [DataMemberAttribute]
+    public ITVTMT940CreateJournals parmCreateJournals(
+        ITVTMT940CreateJournals _createJournals = createJournals)
+    {
+        createJournals = _createJournals;
+
+        return createJournals;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSettleTransactions</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets settleTransactions-Instancevariable of type <c>ITVTMT940SettleTransactions</c>
+    /// </summary>
+    /// <param name = "_settleTransactions">
+    /// New value of type <c>ITVTMT940SettleTransactions</c> for settleTransactions
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940SettleTransactions</c> in settleTransactions
+    /// </returns>
+    [DataMemberAttribute]
+    public ITVTMT940SettleTransactions parmSettleTransactions(
+        ITVTMT940SettleTransactions _settleTransactions = settleTransactions)
+    {
+        settleTransactions = _settleTransactions;
+
+        return settleTransactions;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPostJournals</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets postJournals-Instancevariable of type <c>ITVTMT940PostJournals</c>
+    /// </summary>
+    /// <param name = "_postJournals">
+    /// New value of type <c>ITVTMT940PostJournals</c> for postJournals
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940PostJournals</c> in postJournals
+    /// </returns>
+    [DataMemberAttribute]
+    public ITVTMT940PostJournals parmPostJournals(
+        ITVTMT940PostJournals _postJournals = postJournals)
+    {
+        postJournals = _postJournals;
+
+        return postJournals;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

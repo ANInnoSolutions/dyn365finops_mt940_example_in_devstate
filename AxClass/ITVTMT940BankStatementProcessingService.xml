@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankStatementProcessingService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940 Processing class
+/// 
+/// This class controls the flow for MT940 processing. Every step done by MT940 will start by using this class.
+/// </summary>
+class ITVTMT940BankStatementProcessingService
+{
+    // Parameters
+    ITVTMT940BankStatementProcessingContract            processingContract;
+    
+    /*
+    public ITVTMT940ProcessMT940            processMT940;
+    public ITVTMT940FindBusinessPartner     findBusinessPartner;
+    public ITVTMT940FindOpenTransactions    findOpenTransactions;
+    public ITVTMT940CreateJournals          createJournals;
+    public ITVTMT940SettleTransactions      settleTransactions;
+    public ITVTMT940PostJournals            postJournals;
+    */
+
+    // Working classes
+    ITVTMT940CreateProcessingDataStructure              processingDataStruc;
+    ITVTMT940FindBusinessPartner                        processFindBusinessPartner;
+    ITVTMT940FindReleatedTransactionsForBankStatements  processFindRelTrans;
+    ITVTMT940CreateJournalsFromBankStatment             processCreateJournals;
+    ITVTMT940SettleCreatedJournals                      processSettleJournals;
+    ITVTMT940PostJournalsForBankStatements              processPostJournals;
+
+    //List importedBankAccounts;
+    List createdImportHistorys;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Constructor to create a new instance of <c>ITVTMT940BankStatmentProcessingService</c>
+    /// </summary>
+    /// <returns><c>ITVTMT940BankStatementProcessingService</c>-Instance</returns>
+    public static ITVTMT940BankStatementProcessingService construct()
+    {
+        ITVTMT940BankStatementProcessingService processingService = new ITVTMT940BankStatementProcessingService();
+
+        ITVTMT940BankStatementProcessingContract contract = new ITVTMT940BankStatementProcessingContract();
+        
+        processingService.parmProcessingContract(contract);
+
+        return processingService;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processBankStatementForMatching</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 main method which controls the process of MT940 and calls all functions wich are 
+    /// select at the dialog in <c>ITVTMT940BankStatmentImportBatch</c> and transfered with the cantract class
+    /// <c>ITVTMT940BankStatementProcessingContract</c>
+    /// </summary>
+    /// <param name = "_importedBankAccounts">List with elements of type <c>BankStatementImportData</c></param>
+    public void processBankStatementForMatching(List _importedBankAccounts)
+    {
+        if (processingContract.parmProcessMT940() == NoYes::Yes)
+        {
+            this.createProcessingDataStructure(_importedBankAccounts);
+        }
+
+        if (processingContract.parmFindBusinessPartner()  == NoYes::Yes ||
+            processingContract.parmFindOpenTransactions() == NoYes::Yes)
+        {
+            this.findRelatedTransactionsForBankStatements();
+        }
+
+        if (processingContract.parmCreateJournals() == NoYes::Yes)
+        {
+            this.createJournalsFromBankStatements();
+        }
+
+        if (processingContract.parmSettleTransactions() == NoYes::Yes)
+        {
+            this.settleCreatedJournals();
+        }
+
+        if (processingContract.parmPostJournals() == NoYes::Yes)
+        {
+            this.postJournalsForBankStatements();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createProcessingDataStructure</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 method for creating a processing structure. The created structured holds all 
+    /// informations to call different process steps if an error occured
+    /// </summary>
+    /// <param name = "_importedBankAccounts">List with elements of type <c>BankStatementImportData</c></param>
+    protected void createProcessingDataStructure(List _importedBankAccounts)
+    {
+        processingDataStruc = new ITVTMT940CreateProcessingDataStructure();
+
+        createdImportHistorys = processingDataStruc.processImportedBankAccounts(_importedBankAccounts);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findRelatedTransactionsForBankStatements</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 method to find business partners and transactions which are related to a 
+    /// line in bank statements
+    /// </summary>
+    protected void findRelatedTransactionsForBankStatements()
+    {
+        processFindRelTrans = ITVTMT940FindReleatedTransactionsForBankStatements::Construct();
+
+        processFindRelTrans.processFindingsForBankStaements(createdImportHistorys);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createJournalsFromBankStatements</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 method to create journals for every line in bank statements
+    /// </summary>
+    protected void createJournalsFromBankStatements()
+    {
+        processCreateJournals = new ITVTMT940CreateJournalsFromBankStatment();
+
+        processCreateJournals.processJournalCreation(createdImportHistorys);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>settleCreatedJournals</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 method to sttle open transactions with journals created for the bank statement
+    /// </summary>
+    protected void settleCreatedJournals()
+    {
+        processSettleJournals = new ITVTMT940SettleCreatedJournals();
+
+        processSettleJournals.processSettlementsForJournals(createdImportHistorys);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postJournalsForBankStatements</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 method to post the journals for bank statments
+    /// </summary>
+    protected void postJournalsForBankStatements()
+    {
+        processPostJournals = new ITVTMT940PostJournalsForBankStatements();
+
+        processPostJournals.processJournalPostingForBankStatements(createdImportHistorys);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProcessingContract</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 parm method to get or set the contract class <c>ITVTMT940BankStatementProcessingContract</c>
+    /// </summary>
+    /// <param name = "_processingContract">
+    /// New value of type <c>ITVTMT940BankStatementProcessingContract</c> for processingContract
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940BankStatementProcessingContract</c> in processingContract
+    /// </returns>
+    public ITVTMT940BankStatementProcessingContract parmProcessingContract(
+        ITVTMT940BankStatementProcessingContract _processingContract = processingContract)
+    {
+        processingContract = _processingContract;
+ 
+        return processingContract;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

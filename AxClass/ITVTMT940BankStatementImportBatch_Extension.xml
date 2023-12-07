@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankStatementImportBatch_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940 extension for <c>BankStatmentImportBatch</c>-class. 
+/// 
+/// Adds new dialog fields and logic to process ITVT MT940.
+/// </summary>
+[ExtensionOf(classStr(BankStatementImportBatch))]
+final class ITVTMT940BankStatementImportBatch_Extension
+{
+    private ITVTMT940BankStatementProcessingService     mt940;
+    private ITVTMT940BankStatementProcessingContract    mt940Contract;
+
+    private DialogField dialogProcessMt940;
+    private DialogField dialogFindBusinessPartner;
+    private DialogField dialogFindOpenTransactions;
+    private DialogField dialogCreateJournals;
+    private DialogField dialogSettleTransactions;
+    private DialogField dialogPostJournals;
+
+    public ITVTMT940ProcessMT940            processMT940;
+    public ITVTMT940FindBusinessPartner     findBusinessPartner;
+    public ITVTMT940FindOpenTransactions    findOpenTransactions;
+    public ITVTMT940CreateJournals          createJournals;
+    public ITVTMT940SettleTransactions      settleTransactions;
+    public ITVTMT940PostJournals            postJournals;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>pack</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 extension for <c>pack</c>-methode for transfer new fields for processing 
+    /// </summary>
+    /// <returns><c>Container</c> MT940 related paraeters for processing</returns>
+    public container pack()
+    {
+        container   arguments = next pack();
+        int         end       = conLen(arguments);
+
+        arguments = conIns(
+            arguments, end + 1, processMT940, findBusinessPartner, 
+            findOpenTransactions, createJournals, settleTransactions, postJournals);
+
+        return arguments;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>unpack</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 extension foe <c>unpack</c>-method to get MT940 related parameters for processing
+    /// </summary>
+    /// <param name = "_packedClass"><c>container</c> for packed class</param>
+    /// <returns>true if current version exists</returns>
+    public boolean unpack(container _packedClass)
+    {
+        boolean ret = next unpack(_packedClass);
+        int     end = conLen(_packedClass);
+
+        postJournals            = conPeek(_packedClass, end);
+        settleTransactions      = conPeek(_packedClass, end - 1);
+        createJournals          = conPeek(_packedClass, end - 2);
+        findOpenTransactions    = conPeek(_packedClass, end - 3);
+        findBusinessPartner     = conPeek(_packedClass, end - 4);
+        processMT940            = conPeek(_packedClass, end - 5);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>importBankStatements</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 extension to run new logic for processing MT940 specific logic after bank statement import
+    /// 
+    /// Standrd summary: Import bank statements.
+    /// </summary>
+    /// <returns>List containing imported bank account records and a related list of bank statements.</returns>
+    /// <remarks>
+    /// A single file can be a zip file that contains multiple files or just a single file. Then, each file can contain multiple statements and each of
+    /// those statements can belong to a different bank account and company.
+    /// </remarks>
+    protected List importBankStatements()
+    {
+        mt940           = ITVTMT940BankStatementProcessingService::construct();
+        mt940Contract   = mt940.parmProcessingContract();
+
+        this.setMT940ProcessingContractValues(mt940Contract);
+
+        List importedBankAccounts = next importBankStatements();
+
+        if (mt940Contract.parmProcessMT940() == NoYes::Yes)
+        {
+            mt940.processBankStatementForMatching(importedBankAccounts);
+        }
+
+        return importedBankAccounts;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dialog</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 adds  new field to the standrad dialog object
+    /// </summary>
+    /// <returns><c>Object</c> with dialog</returns>
+    public Object dialog()
+    {
+        Object dialog = next dialog();
+ 
+        dialog.addGroup("@ITVTMT940:MT940");
+
+        dialogProcessMt940          = dialog.addFieldValue(extendedTypeStr(ITVTMT940ProcessMT940), processMT940);
+        dialogFindBusinessPartner   = dialog.addFieldValue(extendedTypeStr(ITVTMT940FindBusinessPartner), findBusinessPartner);
+        dialogFindOpenTransactions  = dialog.addFieldValue(extendedTypeStr(ITVTMT940FindOpenTransactions), findOpenTransactions);
+        dialogCreateJournals        = dialog.addFieldValue(extendedTypeStr(ITVTMT940CreateJournals), createJournals);
+        dialogSettleTransactions    = dialog.addFieldValue(extendedTypeStr(ITVTMT940SettleTransactions), settleTransactions);
+        dialogPostJournals          = dialog.addFieldValue(extendedTypeStr(ITVTMT940PostJournals), postJournals);
+
+        return dialog;
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getFromDialog</Name>
+				<Source><![CDATA[
+    /*
+    // ToDo: Add logic related to the new dialog fields for changed values
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name = "_bankAccountControl"></param>
+    /// <returns></returns>
+    public boolean bankAccountModified(FormStringControl _bankAccountControl)
+    {
+        boolean ret = next bankAccountModified(_bankAccountControl);
+
+        CompanyBankAccountId bankAccountValue = _bankAccountControl.valueStr();
+
+        dialogProcessMt940.value(ITVTMT940BankAccountTable::find(bankAccountValue).ProcessMT940);
+
+        return ret;
+
+    }
+
+    // ToDo: Check for another solution
+    
+    public void dialogActivateFields()
+    {
+        if (importMultipleAccounts == NoYes::Yes)
+        {
+            dialogProcessMt940.value(
+                ITVTMT940Parameters::find().ProcessJournalCreationAfterImport);
+        }
+    }
+    */
+
+    /// <summary>
+    /// ITVT MT940 adds logic to set new instance variables
+    /// 
+    /// Standard summary: Gets data from dialog.
+    /// </summary>
+    /// <returns>
+    /// Returns true if the operation succeed.
+    /// </returns>
+    public boolean getFromDialog()
+    {
+        boolean ret = next getFromDialog();
+
+        processMT940            = dialogProcessMt940.value();
+        findBusinessPartner     = dialogFindBusinessPartner.value();
+        findOpenTransactions    = dialogFindOpenTransactions.value();
+        createJournals          = dialogCreateJournals.value();
+        settleTransactions      = dialogSettleTransactions.value();
+        postJournals            = dialogPostJournals.value();
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setMT940ProcessingContractValues</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// ITVT MT940 set values for <c>ITVTMT940BankStatementProcessingContract</c>
+    /// </summary>
+    /// <param name = "_processingContract"><c>ITVTMT940BankStatementProcessingContract</c> contract which should be used</param>
+    /// <returns><c>ITVTMT940BankStatementProcessingContract</c> contract</returns>
+    public ITVTMT940BankStatementProcessingContract setMT940ProcessingContractValues(
+        ITVTMT940BankStatementProcessingContract _processingContract)
+    {
+        _processingContract.parmProcessMT940(processMT940);
+        _processingContract.parmFindBusinessPartner(findBusinessPartner);
+        _processingContract.parmFindOpenTransactions(findOpenTransactions);
+        _processingContract.parmCreateJournals(createJournals);
+        _processingContract.parmSettleTransactions(settleTransactions);
+        _processingContract.parmPostJournals(postJournals);
+
+        return _processingContract;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

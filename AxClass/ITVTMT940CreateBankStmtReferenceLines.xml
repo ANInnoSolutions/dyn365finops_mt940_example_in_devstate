@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940CreateBankStmtReferenceLines</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940 class for creating reference values from bank statement line to use while searching for related transactions
+/// </summary>
+class ITVTMT940CreateBankStmtReferenceLines
+{
+    // Do not clear while creating ReferenceLines 
+    ITVTMT940Parameters                 mt940Parameters;
+
+    RecordInsertList                    referencesList;
+    Map                                 assignmentLineProcessingStatus;
+    
+    // Clear for every reportEntry
+    ITVTMT940BankStmtAssignHistoryLine  assignmentLine;
+    BankStmtISOReportEntry              reportEntry;
+    ITVTMT940BankAccountTable           mt940BankAccount;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>Construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Constructor method for <c>ITVTMT940CreateBankStmtReferenceLines</c>
+    /// </summary>
+    /// <returns>Instance of class <c>ITVTMT940CreateBankStmtReferenceLines</c></returns>
+    public ITVTMT940CreateBankStmtReferenceLines Construct()
+    {
+        ITVTMT940CreateBankStmtReferenceLines createReferenceLines =
+            new ITVTMT940CreateBankStmtReferenceLines();
+
+        return createReferenceLines;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>clearInstanceMembersForNewRecord</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Use this methos to clear istance variables
+    /// </summary>
+    public void clearInstanceMembersForNewRecord()
+    {
+        reportEntry.clear();
+        mt940BankAccount.clear();
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runCreateEntrysInReferenceTable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Starts the creation of new reference lines
+    /// </summary>
+    public void runCreateEntrysInReferenceTable()
+    {
+        this.createEntrysInReferenceTable();
+
+        // Use Parameters for extended logic to create reference lines.
+        // For Example concat fields or something else
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createEntrysInReferenceTable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates new lines to add to RecordInsertList for new refernce lines
+    /// </summary>
+    protected void createEntrysInReferenceTable()
+    {
+        ITVTMT940BankStmtISOReportEntryReferences   reference;
+        container                                   referenceIdentificatorAndValue;
+        str                                         referenceValuesConcat;
+
+
+        if (reportEntry.ITVTMT940KeyField00 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.KeyField                          = ITVTMT940KeyField::Key00;
+            reference.ReferenceValue                    = reportEntry.ITVTMT940KeyField00;
+
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField10 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.KeyField                          = ITVTMT940KeyField::Key10;
+            reference.ReferenceValue                    = reportEntry.ITVTMT940KeyField10;
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField20 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key20;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField20);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField21 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key21;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField21);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField22 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key22;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField22);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField23 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key23;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField23);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField24 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key24;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField24);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField25 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key25;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField25);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField26 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key26;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField26);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField27 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key27;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField27);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField28 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key28;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField28);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField29 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key29;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField29);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField30 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.KeyField                          = ITVTMT940KeyField::Key30;
+            reference.ReferenceValue                    = reportEntry.ITVTMT940KeyField30;
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField31 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.KeyField                          = ITVTMT940KeyField::Key31;
+            reference.ReferenceValue                    = reportEntry.ITVTMT940KeyField31;
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField32 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.KeyField                          = ITVTMT940KeyField::Key32;
+            reference.ReferenceValue                    = reportEntry.ITVTMT940KeyField32;
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField33 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.KeyField                          = ITVTMT940KeyField::Key33;
+            reference.ReferenceValue                    = reportEntry.ITVTMT940KeyField33;
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField34 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.KeyField                          = ITVTMT940KeyField::Key34;
+            reference.ReferenceValue                    = reportEntry.ITVTMT940KeyField34;
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField60 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key60;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField60);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField61 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key61;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField61);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField62 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key62;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField62);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+        
+        if (reportEntry.ITVTMT940KeyField63 != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Key63;
+
+            referenceIdentificatorAndValue              = this.getStandardReferenceIdentificator(reportEntry.ITVTMT940KeyField63);
+            reference.StandardReferenceIdentificator    = conPeek(referenceIdentificatorAndValue, 1);
+            reference.ReferenceValue                    = conPeek(referenceIdentificatorAndValue, 2);
+
+            if (reference.StandardReferenceIdentificator == ITVTMT940StandardReferenceIdentificator::None)
+            {
+                referenceValuesConcat = referenceValuesConcat + reference.ReferenceValue;
+            }
+
+            referencesList.add(reference);
+        }
+
+        if (referenceValuesConcat != '')
+        {
+            reference.clear();
+
+            reference.ReportEntryRecId                  = reportEntry.RecId;
+            reference.KeyField                          = ITVTMT940KeyField::Concat;
+            reference.StandardReferenceIdentificator    = ITVTMT940StandardReferenceIdentificator::None;
+            reference.ReferenceValuesConcat             = referenceValuesConcat;
+
+            referencesList.add(reference);
+
+        }
+
+        assignmentLineProcessingStatus.insert(
+            assignmentLine.RecId, ITVTMT940ProcessingStatus::SearchForBussinessPartnerDone);
+
+        // ToDo: Do some additional stuff for preparing
+        //
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getStandardReferenceIdentificator</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Get standard MT-940 reference identificator from Key field 
+    /// </summary>
+    /// <param name = "_value"><c>ITVTMT940ReferenceValue</c> to find reference identificator in</param>
+    /// <returns><c>container</c> with standard identificator and reference value</returns>
+    protected container getStandardReferenceIdentificator(ITVTMT940ReferenceValue _value)
+    {
+        
+        ITVTMT940StandardReferenceIdentificator referenceIdentificator;
+        ITVTMT940ReferenceValue                 referenceValue;
+        container                               referenceIdentificatorAndValue;
+
+        const str                               EREF = 'EREF', KREF = 'KREF', MREF = 'MREF',
+                                                CRED = 'CRED', DEBT = 'DEBT', SVWZ = 'SVWZ',
+                                                COAM = 'COAM', OAMT = 'OAMT', ABWA = 'ABWA',
+                                                ABWE = 'ABWE';
+
+        const int                               firstChar = 1, plusChar = 5, identifierLen = 4, valueStart = 6;
+
+        if (strFind(_value,'+', plusChar, firstChar))
+        {
+            switch (subStr(_value, firstChar, identifierLen))
+            {
+                case EREF:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::EREF;
+                    
+                    break;
+
+                case KREF:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::KREF;
+                    
+                    break;
+
+                case MREF:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::MREF;
+                    
+                    break;
+
+                case CRED:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::CRED;
+                    
+                    break;
+
+                case DEBT:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::DEBT;
+                    
+                    break;
+
+                case SVWZ:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::SVWZ;
+                    
+                    break;
+
+                case COAM:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::COAM;
+                    
+                    break;
+
+                case OAMT:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::OAMT;
+                    
+                    break;
+
+                case ABWA:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::ABWA;
+                    
+                    break;
+
+                case ABWE:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::ABWE;
+                    
+                    break;
+
+                default:
+                    referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::None;
+                    
+                    break;
+
+            }
+
+            referenceValue = subStr(_value, valueStart, strLen(_value));
+        }
+        else
+        {
+            referenceIdentificator  = ITVTMT940StandardReferenceIdentificator::None;
+            referenceValue          = _value;
+        }
+        
+
+        referenceIdentificatorAndValue = [referenceIdentificator, referenceValue];
+
+        return referenceIdentificatorAndValue;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssignmentLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets assignmentLine-Instancevariable of type <c>ITVTMT940BankStmtAssignHistoryLine</c>
+    /// </summary>
+    /// <param name = "_assignmentLine">
+    /// New value of type <c>ITVTMT940BankStmtAssignHistoryLine</c> for assignmentLine
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940BankStmtAssignHistoryLine</c> in assignmentLine
+    /// </returns>
+    public ITVTMT940BankStmtAssignHistoryLine parmAssignmentLine(
+        ITVTMT940BankStmtAssignHistoryLine _assignmentLine = assignmentLine)
+    {
+        assignmentLine = _assignmentLine;
+
+        return assignmentLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmReportEntry</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets reportEntry-Instancevariable of type <c>BankStmtISOReportEntry</c>
+    /// </summary>
+    /// <param name = "_reportEntry">
+    /// New value of type <c>BankStmtISOReportEntry</c> for reportEntry
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>BankStmtISOReportEntry</c> in reportEntry
+    /// </returns>
+    public BankStmtISOReportEntry parmReportEntry(BankStmtISOReportEntry _reportEntry = reportEntry)
+    {
+        reportEntry = _reportEntry;
+
+        return reportEntry;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmReferencesList</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets referencesList-Instancevariable of type <c>RecordInsertList</c>
+    /// </summary>
+    /// <param name = "_referencesList">
+    /// New value of type <c>RecordInsertList</c> for referencesList
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>RecordInsertList</c> in referencesList
+    /// </returns>
+    public RecordInsertList parmReferencesList(RecordInsertList _referencesList = referencesList)
+    {
+        referencesList = _referencesList;
+
+        return referencesList;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmMT940Parameters</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets mt940Parameters-Instancevariable of type <c>ITVTMT940Parameters</c>
+    /// </summary>
+    /// <param name = "_mt940Parameters">
+    /// New value of type <c>ITVTMT940Parameters</c> for mt940Parameters
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940Parameters</c> in mt940Parameters
+    /// </returns>
+    public ITVTMT940Parameters parmMT940Parameters(
+        ITVTMT940Parameters _mt940Parameters = mt940Parameters)
+    {
+        mt940Parameters = _mt940Parameters;
+
+        return mt940Parameters;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmMT940BankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets mt940BankAccount-Instancevariable of type <c>ITVTMT940BankAccountTable</c>
+    /// </summary>
+    /// <param name = "_mt940BankAccount">
+    /// New value of type <c>ITVTMT940BankAccountTable</c> for mt940BankAccount
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940BankAccountTable</c> in mt940BankAccount
+    /// </returns>
+    public ITVTMT940BankAccountTable parmMT940BankAccount(
+        ITVTMT940BankAccountTable _mt940BankAccount = mt940BankAccount)
+    {
+        mt940BankAccount = _mt940BankAccount;
+
+        return mt940BankAccount;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssignmentLineProcessingStatus</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets assignmentLineProcessingStatus-Instancevariable of type <c>Map</c>
+    /// </summary>
+    /// <param name = "_assignmentLineProcessingStatus">
+    /// New value of type <c>Map</c> for assignmentLineProcessingStatus
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>Map</c> in assignmentLineProcessingStatus
+    /// </returns>
+    public Map parmAssignmentLineProcessingStatus(Map _assignmentLineProcessingStatus = assignmentLineProcessingStatus)
+    {
+        assignmentLineProcessingStatus = _assignmentLineProcessingStatus;
+
+        return assignmentLineProcessingStatus;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

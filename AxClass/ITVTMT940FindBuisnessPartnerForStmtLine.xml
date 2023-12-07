@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940FindBuisnessPartnerForStmtLine</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVTMT940
+/// 
+/// This clas holds the logic to find business partners which are related to one bank statement line
+/// </summary>
+class ITVTMT940FindBuisnessPartnerForStmtLine
+{
+    RecordInsertList                    businessPartnerSearch;
+    RecordInsertList                    reportEntryBusinessPartners;
+    Map                                 assignmentLineProcessingStatus;
+    
+    ITVTMT940Parameters                 mt940Parameters;
+    
+    ITVTMT940BankAccountTable           mt940BankAccount;
+    ITVTMT940BankStmtAssignHistoryLine  assignmentLine;
+    BankStmtISOReportEntry              reportEntry;
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>Construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Constructor class
+    /// </summary>
+    /// <returns>New instance of type <c>ITVTMT940FindBuisnessPartnerForStmtLine</c></returns>
+    public static ITVTMT940FindBuisnessPartnerForStmtLine Construct()
+    {
+        
+        ITVTMT940FindBuisnessPartnerForStmtLine findBusinessPartner =
+            new ITVTMT940FindBuisnessPartnerForStmtLine();
+
+        return findBusinessPartner;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>clearInstanceMembersForNewRecord</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Clears the instance values which should not be reused
+    /// </summary>
+    public void clearInstanceMembersForNewRecord()
+    {
+        assignmentLine.clear();
+        reportEntry.clear();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findBusinessPartnerForStmtLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// This method starts the business partner search
+    /// </summary>
+    /// <returns>true if business partner found; otherwise false</returns>
+    public boolean findBusinessPartnerForStmtLine()
+    {
+        boolean ret;
+
+        if (reportEntry.ITVTMT940KeyField31 == '')
+        {
+            // No IBAN, this line should be an bank transaction
+            ret = this.setAssignmentLineBuisinessPartnerSearch(0, 0, 0, 0, true);
+        }
+        else
+        {
+            ret = this.findBusinessPartner();
+        }
+        
+        return ret;
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findBusinessPartner</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// This method runs different logics to find te related business partner
+    /// </summary>
+    /// <returns>true if business partner found; otherwise false</returns>
+    protected boolean findBusinessPartner()
+    {
+        boolean ret;
+
+        int countCustByBank;
+        int countCustByName;
+        int countVendByBank;
+        int countVendByName;
+        
+        // Count releated Business Partners
+        countCustByBank = this.countCustomerByBankAccount();
+            
+        if (!countCustByBank)
+        {
+            countCustByName = this.countCustomerbyName();
+        }
+
+        countVendByBank = this.countVendorByBankAccount();
+
+        if (!countVendByBank)
+        {
+            countVendByName = this.countVendorByName();
+        }
+
+        // Use the count to decide new lines should be created
+        ret = this.setAssignmentLineBuisinessPartnerSearch(countCustByBank, countCustByName, countVendByBank, countVendByName);
+
+        if (ret)
+        {
+            // Create lines for related Business Partners
+
+            if (countCustByBank)
+            {
+                this.findCustomerByBankAccount();
+            }
+            else if (countCustByName)
+            {
+                this.findCustomerbyName();
+            }
+
+            if (countVendByBank)
+            {
+                this.findVendorByBankAccount();
+            }
+            else if (countVendByName)
+            {
+                this.findVendorByName();
+            }
+
+        }
+        
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>countCustomerByBankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Count number of customers are found by bank account
+    /// </summary>
+    /// <returns>Number of customers</returns>
+    protected int countCustomerByBankAccount()
+    {
+        
+        return
+            (select     count(RecId)
+                from    CustBankAccount
+                where   CustBankAccount.BankIBAN == reportEntry.ITVTMT940KeyField31)
+            .RecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>countCustomerbyName</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Count number of customers are found by name
+    /// </summary>
+    /// <returns>Number of customers</returns>
+    protected int countCustomerbyName()
+    {
+        CustTable       custTable;
+        DirPartyTable   dirPartyTable;
+        
+
+        select      count(RecId)
+            from    custTable
+            join    dirPartyTable
+            where   custTable.Party     == dirPartyTable.RecID &&
+                    dirPartyTable.Name  == reportEntry.dispTradingPartyName();
+
+        return custTable.RecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>countVendorByBankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Count number of vendors found by bank account 
+    /// </summary>
+    /// <returns>Number of vendors</returns>
+    protected int countVendorByBankAccount()
+    {
+        return
+            (select     count(RecId)
+                from    VendBankAccount
+                where   VendBankAccount.BankIBAN == reportEntry.ITVTMT940KeyField31)
+            .RecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>countVendorByName</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Count number of vendors by name
+    /// </summary>
+    /// <returns>Number of vendors</returns>
+    protected int countVendorByName()
+    {
+        VendTable       vendTable;
+        DirPartyTable   dirPartyTable;
+        
+
+        select      count(RecId)
+            from    vendTable
+            join    dirPartyTable
+            where   vendTable.Party     == dirPartyTable.RecID &&
+                    dirPartyTable.Name  == reportEntry.dispTradingPartyName();
+
+        return vendTable.RecId;
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setAssignmentLineBuisinessPartnerSearch</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validate the found customers and vendors and set history entry
+    /// </summary>
+    /// <param name = "_countCustByBank">Number of customers found by bank</param>
+    /// <param name = "_countCustByName">Number of customers found by name</param>
+    /// <param name = "_countVendByBank">Number of vendors found by bank</param>
+    /// <param name = "_countVendByName">Number of vendors found by name</param>
+    /// <param name = "_noIBAN"><c>true</c> if no IBan are given</param>
+    /// <returns>true if constelation was found</returns>
+    protected boolean setAssignmentLineBuisinessPartnerSearch(
+        int     _countCustByBank,
+        int     _countCustByName,
+        int     _countVendByBank,
+        int     _countVendByName,
+        boolean _noIBAN = false)
+    {
+        boolean ret = false;
+
+        ITVTMT940BankStmtAssignHistoryLineBusinessPartnerSearch partnersearch;
+                
+        partnersearch.BankStmtAssignHistLineRecId = assignmentLine.RecId;
+
+        if (_noIBAN)
+        {
+            partnersearch.SearchStatusBusinessPartner  = ITVTMT940SearchStatusBusinessPartner::NoIBAN;
+        }
+        else
+        {
+            if ((_countCustByBank || _countCustByName) && !_countVendByBank && !_countVendByName)
+            {
+                if (_countCustByBank)
+                {
+                    partnersearch.NumOfCustomersFound           = _countCustByBank;
+                    partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::CustByBank;
+                
+                    ret                                         = true;
+                }
+                else
+                {
+                    partnersearch.NumOfCustomersFound           = _countCustByName;
+                    partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::CustByName;
+                
+                    ret                                         = true;
+                }
+            }
+            else if ((_countVendByBank || _countVendByName) && !_countCustByBank && !_countCustByName)
+            {
+                if (_countVendByBank)
+                {
+                    partnersearch.NumOfVendorsFound             = _countVendByBank;
+                    partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::VendByBank;
+                
+                    ret                                         = true;
+                }
+                else
+                {
+                    partnersearch.NumOfVendorsFound             = _countVendByName;
+                    partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::VendByName;
+                
+                    ret                                         = true;
+                }
+
+            }
+            else if (_countCustByBank && _countVendByBank)
+            {
+                partnersearch.NumOfCustomersFound           = _countCustByBank;
+                partnersearch.NumOfVendorsFound             = _countVendByBank;
+                partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::BothByBank;
+            
+                ret                                         = true;
+            }
+            else if (_countCustByName && _countVendByName)
+            {
+                partnersearch.NumOfCustomersFound           = _countCustByName;
+                partnersearch.NumOfVendorsFound             = _countVendByName;
+                partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::BothByName;
+            
+                ret                                         = true;
+            }
+            else if (_countCustByBank && _countVendByName)
+            {
+                partnersearch.NumOfCustomersFound           = _countCustByBank;
+                partnersearch.NumOfVendorsFound             = _countVendByName;
+                partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::CustByBankAndVendByName;
+            
+                ret                                         = true;
+            }
+            else if (_countCustByName && _countVendByBank)
+            {
+                partnersearch.NumOfCustomersFound           = _countCustByName;
+                partnersearch.NumOfVendorsFound             = _countVendByBank;
+                partnersearch.SearchStatusBusinessPartner   = ITVTMT940SearchStatusBusinessPartner::VendByBankAndCustByName;
+            
+                ret                                         = true;
+            }
+
+            if (!ret)
+            {
+                partnersearch.SearchStatusBusinessPartner  = ITVTMT940SearchStatusBusinessPartner::NoCustOrVendByBankOrName;
+            }
+        }
+
+        businessPartnerSearch.add(partnersearch);
+
+        assignmentLineProcessingStatus.insert(
+            assignmentLine.RecId, ITVTMT940ProcessingStatus::SearchForBussinessPartnerDone);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findCustomerByBankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find customer by bank account and add new entry
+    /// </summary>
+    protected void findCustomerByBankAccount()
+    {
+        CustBankAccount custBankAccount;
+
+        while 
+            select  CustAccount
+            from    CustBankAccount
+            where   CustBankAccount.BankIBAN == reportEntry.ITVTMT940KeyField31
+        {
+            ITVTMT940BankStmtISOReportEntryBusinessPartner businessPartner;
+
+            businessPartner.BankStmtISOReportEntryRecId = reportEntry.RecId;
+            businessPartner.BankStmtAssignHistLineRecId = assignmentLine.RecId;
+            businessPartner.CustAccount                 = custBankAccount.CustAccount;
+            businessPartner.SearchStatusBusinessPartner = ITVTMT940SearchStatusBusinessPartner::CustByBank;
+
+            reportEntryBusinessPartners.add(businessPartner);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findCustomerbyName</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find customer by name and add new enty
+    /// </summary>
+    protected void findCustomerbyName()
+    {
+        CustTable       custTable;
+        DirPartyTable   dirPartyTable;
+        
+        while 
+            select  AccountNum
+            from    custTable
+            join    dirPartyTable
+            where   custTable.Party     == dirPartyTable.RecID &&
+                    dirPartyTable.Name  == reportEntry.dispTradingPartyName()
+        {
+            ITVTMT940BankStmtISOReportEntryBusinessPartner businessPartner;
+
+            businessPartner.BankStmtISOReportEntryRecId = reportEntry.RecId;
+            businessPartner.BankStmtAssignHistLineRecId = assignmentLine.RecId;
+            businessPartner.CustAccount                 = custTable.AccountNum;
+            businessPartner.SearchStatusBusinessPartner = ITVTMT940SearchStatusBusinessPartner::CustByName;
+
+            reportEntryBusinessPartners.add(businessPartner);
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findVendorByBankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find Vendor by bank account and add new entry
+    /// </summary>
+    protected void findVendorByBankAccount()
+    {
+        VendBankAccount vendBankAccount;
+
+        while 
+            select  VendAccount
+            from    vendBankAccount
+            where   vendBankAccount.BankIBAN == reportEntry.ITVTMT940KeyField31
+        {
+            ITVTMT940BankStmtISOReportEntryBusinessPartner businessPartner;
+
+            businessPartner.BankStmtISOReportEntryRecId = reportEntry.RecId;
+            businessPartner.BankStmtAssignHistLineRecId = assignmentLine.RecId;
+            businessPartner.VendAccount                 = vendBankAccount.VendAccount;
+            businessPartner.SearchStatusBusinessPartner = ITVTMT940SearchStatusBusinessPartner::VendByBank;
+
+            reportEntryBusinessPartners.add(businessPartner);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findVendorByName</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find vendor by name and add new entry
+    /// </summary>
+    protected void findVendorByName()
+    {
+        VendTable       vendTable;
+        DirPartyTable   dirPartyTable;
+        
+        while 
+            select  AccountNum
+            from    vendTable
+            join    dirPartyTable
+            where   vendTable.Party     == dirPartyTable.RecID &&
+                    dirPartyTable.Name  == reportEntry.dispTradingPartyName()
+        {
+            ITVTMT940BankStmtISOReportEntryBusinessPartner businessPartner;
+
+            businessPartner.BankStmtISOReportEntryRecId = reportEntry.RecId;
+            businessPartner.BankStmtAssignHistLineRecId = assignmentLine.RecId;
+            businessPartner.VendAccount                 = vendTable.AccountNum;
+            businessPartner.SearchStatusBusinessPartner = ITVTMT940SearchStatusBusinessPartner::VendByName;
+
+            reportEntryBusinessPartners.add(businessPartner);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBusinessPartnerSearch</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets businessPartnerSearch-Instancevariable of type <c>RecordInsertList</c>
+    /// </summary>
+    /// <param name = "_businessPartnerSearch">
+    /// New value of type <c>RecordInsertList</c> for businessPartnerSearch
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>RecordInsertList</c> in businessPartnerSearch
+    /// </returns>
+    public RecordInsertList parmBusinessPartnerSearch(
+        RecordInsertList _businessPartnerSearch = businessPartnerSearch)
+    {
+        businessPartnerSearch = _businessPartnerSearch;
+
+        return businessPartnerSearch;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmReportEntryBusinessPartners</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets reportEntryBusinessPartners-Instancevariable of type <c>RecordInsertList</c>
+    /// </summary>
+    /// <param name = "_reportEntryBusinessPartners">
+    /// New value of type <c>RecordInsertList</c> for reportEntryBusinessPartners
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>RecordInsertList</c> in reportEntryBusinessPartners
+    /// </returns>
+    public RecordInsertList parmReportEntryBusinessPartners(
+        RecordInsertList _reportEntryBusinessPartners = reportEntryBusinessPartners)
+    {
+        reportEntryBusinessPartners = _reportEntryBusinessPartners;
+
+        return reportEntryBusinessPartners;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssignmentLineProcessingStatus</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets assignmentLineProcessingStatus-Instancevariable of type <c>Map</c>
+    /// </summary>
+    /// <param name = "_assignmentLineProcessingStatus">
+    /// New value of type <c>Map</c> for assignmentLineProcessingStatus
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>Map</c> in assignmentLineProcessingStatus
+    /// </returns>
+    public Map parmAssignmentLineProcessingStatus(Map _assignmentLineProcessingStatus = assignmentLineProcessingStatus)
+    {
+        assignmentLineProcessingStatus = _assignmentLineProcessingStatus;
+
+        return assignmentLineProcessingStatus;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssignmentLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets assignmentLine-Instancevariable of type <c>ITVTMT940BankStmtAssignHistoryLine</c>
+    /// </summary>
+    /// <param name = "_assignmentLine">
+    /// New value of type <c>ITVTMT940BankStmtAssignHistoryLine</c> for assignmentLine
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940BankStmtAssignHistoryLine</c> in assignmentLine
+    /// </returns>
+    public ITVTMT940BankStmtAssignHistoryLine parmAssignmentLine(
+        ITVTMT940BankStmtAssignHistoryLine _assignmentLine = assignmentLine)
+    {
+        assignmentLine = _assignmentLine;
+
+        return assignmentLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmReportEntry</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets reportEntry-Instancevariable of type <c>BankStmtISOReportEntry</c>
+    /// </summary>
+    /// <param name = "_reportEntry">
+    /// New value of type <c>BankStmtISOReportEntry</c> for reportEntry
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>BankStmtISOReportEntry</c> in reportEntry
+    /// </returns>
+    public BankStmtISOReportEntry parmReportEntry(
+        BankStmtISOReportEntry _reportEntry = reportEntry)
+    {
+        reportEntry = _reportEntry;
+
+        return reportEntry;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmMT940Parameters</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets mt940Parameters-Instancevariable of type <c>ITVTMT940Parameters</c>
+    /// </summary>
+    /// <param name = "_mt940Parameters">
+    /// New value of type <c>ITVTMT940Parameters</c> for mt940Parameters
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940Parameters</c> in mt940Parameters
+    /// </returns>
+    public ITVTMT940Parameters parmMT940Parameters(
+        ITVTMT940Parameters _mt940Parameters = mt940Parameters)
+    {
+        mt940Parameters = _mt940Parameters;
+
+        return mt940Parameters;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmMT940BankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets mt940BankAccount-Instancevariable of type <c>ITVTMT940BankAccountTable</c>
+    /// </summary>
+    /// <param name = "_mt940BankAccount">
+    /// New value of type <c>ITVTMT940BankAccountTable</c> for mt940BankAccount
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940BankAccountTable</c> in mt940BankAccount
+    /// </returns>
+    public ITVTMT940BankAccountTable parmMT940BankAccount(
+        ITVTMT940BankAccountTable _mt940BankAccount = mt940BankAccount)
+    {
+        mt940BankAccount = _mt940BankAccount;
+
+        return mt940BankAccount;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

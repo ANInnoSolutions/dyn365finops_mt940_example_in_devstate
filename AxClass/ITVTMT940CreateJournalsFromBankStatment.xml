@@ -1,0 +1,966 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940CreateJournalsFromBankStatment</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940 class to create new journals for bank statements  
+/// </summary>
+class ITVTMT940CreateJournalsFromBankStatment
+{
+    ITVTMT940Parameters             MT940Parameters;
+    ITVTMT940BankStmtImportHistory  importHistory;
+
+    LedgerJournalTable              journalBankOpen;
+    
+    LedgerJournalTable              journalBankSettled;
+    LedgerJournalTable              journalCustOpen;
+    LedgerJournalTable              journalCustSettled;
+    LedgerJournalTable              journalVendOpen;
+    LedgerJournalTable              journalVendSettled;
+    LedgerJournalTable              journalUnknown;
+
+    LedgerJournalEngine             ledgJourEngineUnknown;
+    LedgerJournalEngine             ledgJourEngineCustSettled;
+    LedgerJournalEngine             ledgJourEngineCustOpen;
+    LedgerJournalEngine             ledgJourEngineVendSettled;
+    LedgerJournalEngine             ledgJourEngineVendOpen;
+
+    int                             numOfLinesInJournalBankOpen;
+    int                             numOfLinesInJournalBankSettled;
+    int                             numOfLinesInJournalCustOpen;
+    int                             numOfLinesInJournalCustSettled;
+    int                             numOfLinesInJournalVendOpen;
+    int                             numOfLinesInJournalVendSettled;
+    int                             numOfLinesInJournalUnknown;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>processJournalCreation</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Run over the <c>list</c> of <c>ITVTMT940BankStmtImportHistory</c> records and create ledger journals
+    /// </summary>
+    /// <param name = "_importHistoryList"><c>List</c> of <c>ITVTMT940BankStmtImportHistory</c> records</param>
+    public void processJournalCreation(List _importHistoryList)
+    {
+        ListEnumerator enumerator = _importHistoryList.getEnumerator();
+
+        while (enumerator.moveNext())
+        {
+            importHistory = enumerator.current();
+
+            // If parameters are set to create one Journal for the complete Import 
+            this.processJouralCreationForImportHistoryEntry();
+
+            // If parameters are set to create one Journal for all Stetements withhin one BankAccount
+
+
+            // If parameters are set to create one Journal for every single Statement 
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processJouralCreationForImportHistoryEntry</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates new journal for one <c>ITVTMT940BankStmtImportHistory</c> record
+    /// </summary>
+    protected void processJouralCreationForImportHistoryEntry()
+    {
+        MT940Parameters = ITVTMT940Parameters::find();
+
+        try
+        {
+            ttsbegin;
+
+            // If parameters are set to create one Journal for every bankaccount and statement
+            if (!importHistory.journalsAreCreated())
+            {
+                //this.createNewJournalHeaders(importHistory, importHistory.ImportHistoryId, true, true, true, true, true, true);
+            }
+
+            this.createNewJournalLines();
+
+            ttscommit;
+        }
+        catch
+        {
+            Error("@ITVTMT940:ErrorWhileCreatingJournals");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createNewJournalHeaders</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// method to create a new <c>LedgerJournalTable record</c>
+    /// </summary>
+    /// <param name = "_journalType">
+    /// <c>ITVTMT940JournalType</c> value to choose the type of journal which should be created
+    /// </param>
+    protected void createNewJournalHeaders(ITVTMT940JournalType _journalType)
+    {
+        // ToDo: Add logic for bankaccount and statement
+        if (_journalType == ITVTMT940JournalType::BankOpen)
+        {
+            journalBankOpen     = this.createNewJournalHeaderForBankstament(MT940Parameters.BankJournalOpen);
+        }
+
+        if (_journalType == ITVTMT940JournalType::BankSettled)
+        {
+            journalBankSettled  = this.createNewJournalHeaderForBankstament(MT940Parameters.BankJournalSettled);
+        }
+
+        if (_journalType == ITVTMT940JournalType::CustOpen)
+        {
+            journalCustOpen     = this.createNewJournalHeaderForBankstament(MT940Parameters.CustJournalOpen);
+        }
+
+        if (_journalType == ITVTMT940JournalType::CustSettled)
+        {
+            journalCustSettled  = this.createNewJournalHeaderForBankstament(MT940Parameters.CustJournalSettled);
+        }
+
+        if (_journalType == ITVTMT940JournalType::VendOpen)
+        {
+            journalVendOpen     = this.createNewJournalHeaderForBankstament(MT940Parameters.VendJournalOpen);
+        }
+
+        if (_journalType == ITVTMT940JournalType::VendSettled)
+        {
+            journalVendSettled  = this.createNewJournalHeaderForBankstament(MT940Parameters.VendJournalSettled);
+        }
+
+        if (_journalType == ITVTMT940JournalType::Unknown)
+        {
+            journalUnknown  = this.createNewJournalHeaderForBankstament(MT940Parameters.UnkownJournal);
+        }
+
+        this.initLedgerJournalEngines(_journalType);
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createNewJournalHeaderForBankstament</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Create a new <c>LedgerJournalTable</c> record
+    /// </summary>
+    /// <param name = "_journalNameId">
+    /// <c>LedgerJournalNameId</c> which should be used for the new journal
+    /// </param>
+    /// <returns>
+    /// New record of type <c>LedgerJournalTable</c>
+    /// </returns>
+    protected LedgerJournalTable createNewJournalHeaderForBankstament(LedgerJournalNameId _journalNameId)
+    {
+        LedgerJournalTable ledgerJournalTable;
+
+        ledgerJournalTable.clear();
+        
+        ledgerJournalTable.initValue();
+        ledgerJournalTable.JournalName = _journalNameId;
+        ledgerJournalTable.initFromLedgerJournalName();
+        ledgerJournalTable.JournalNum = JournalTableData::newTable(ledgerJournalTable).nextJournalId();
+        ledgerJournalTable.Name = strFmt("%1 + %2", importHistory.ImportHistoryId, _journalNameId);
+        
+        if (ledgerJournalTable.validateWrite())
+        {
+            ledgerJournalTable.insert();
+        }
+        else
+        {
+            Error("@ITVTMT940:ErrorWhileCreatingJournalTable");
+        }
+        return ledgerJournalTable;
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initLedgerJournalEngines</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initialize a new <c>LedgerJournalEngine</c>
+    /// </summary>
+    /// <param name = "_journalType">
+    /// <c>ITVTMT940JournalType</c> value to know for which journal the engine should be created
+    /// </param>
+    protected void initLedgerJournalEngines(ITVTMT940JournalType _journalType)
+    {
+        /*
+        if (_journalType == ITVTMT940JournalType::BankOpen)
+        {
+            journalBankOpen     = this.createNewJournalHeaderForBankstament(MT940Parameters.BankJournalOpen);
+        }
+
+        if (_journalType == ITVTMT940JournalType::BankSettled)
+        {
+            journalBankSettled  = this.createNewJournalHeaderForBankstament(MT940Parameters.BankJournalSettled, _historyId);
+        }
+        */
+
+        if (_journalType == ITVTMT940JournalType::CustOpen)
+        {
+            if (ledgJourEngineCustOpen == null)
+            {
+                ledgJourEngineCustOpen = LedgerJournalEngine::construct(journalCustOpen.JournalType);
+            }
+            ledgJourEngineCustOpen.newJournalActive(journalCustOpen);
+        }
+
+        if (_journalType == ITVTMT940JournalType::CustSettled)
+        {
+            if (ledgJourEngineCustSettled == null)
+            {
+                ledgJourEngineCustSettled = LedgerJournalEngine::construct(journalCustSettled.JournalType);
+            }
+            ledgJourEngineCustSettled.newJournalActive(journalCustSettled);
+        }
+
+        if (_journalType == ITVTMT940JournalType::VendOpen)
+        {
+            if (ledgJourEngineVendOpen == null)
+            {
+                ledgJourEngineVendOpen = LedgerJournalEngine::construct(journalVendOpen.JournalType);
+            }
+            ledgJourEngineVendOpen.newJournalActive(journalVendOpen);
+        }
+
+        if (_journalType == ITVTMT940JournalType::VendSettled)
+        {
+            if (ledgJourEngineVendSettled == null)
+            {
+                ledgJourEngineVendSettled = LedgerJournalEngine::construct(journalVendSettled.JournalType);
+            }
+            ledgJourEngineVendSettled.newJournalActive(journalVendSettled);
+        }
+
+        if (_journalType == ITVTMT940JournalType::Unknown)
+        {
+            if (ledgJourEngineUnknown == null)
+            {
+                ledgJourEngineUnknown = LedgerJournalEngine::construct(journalUnknown.JournalType);
+            }
+            ledgJourEngineUnknown.newJournalActive(journalUnknown);
+        }
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createNewJournalLines</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Create new journal lines
+    /// </summary>
+    /// <param name = "_importHistoryBank">
+    /// <c>ITVTMT940BankStmtImportHistoryBankAccount</c>-record for which the journal lines should be created
+    /// </param>
+    /// <param name = "_importHistoryStatement">
+    /// <c>ITVTMT940BankStmtImportHistoryStatement</c>-record for which the journal lines should be created
+    /// </param>
+    protected void createNewJournalLines(
+        ITVTMT940BankStmtImportHistoryBankAccount   _importHistoryBank      = null,
+        ITVTMT940BankStmtImportHistoryStatement     _importHistoryStatement = null)
+    {
+        
+        ITVTMT940BankStmtImportHistory                      importHistorySelect;
+        ITVTMT940BankStmtImportHistoryBankAccount           importHistoryBank;
+        ITVTMT940BankStmtImportHistoryStatement             importHistoryStmt;
+        ITVTMT940BankStmtAssignHistoryTable                 assignmentTable;
+        ITVTMT940BankStmtAssignHistoryLine                  assignmentLine;
+
+
+        // ToDo: Write Query build
+        /*
+        while select
+                *
+            from 
+                assignmentLine
+            join 
+                assignmentTable
+            join 
+                importHistorySelect
+            join 
+                importHistoryBank
+            join 
+                importHistoryStmt
+            outer join
+                openTransaction
+            where 
+                importHistory.RecId                             == _importHistory.RecId     &&
+                importHistoryBank.BankStmtImportHistory         == importHistory.RecId      &&
+                importHistoryStmt.BankStmtImpHistBankAcc        == importHistoryBank.RecId  &&
+                assignmentTable.BankStmtImpHistStmt             == importHistoryStmt.RecId  &&
+                assignmentLine.BankStmtAssignHistTable          == assignmentTable.RecId    &&
+                openTransaction.BankStmtAssignHistLineRecId     == assignmentLine.RecId
+        {
+            this.createNewJournalLine(assignmentLine, openTransaction);
+        }
+        */
+        while select
+            importHistorySelect
+            join
+            importHistoryBank
+            join
+            importHistoryStmt
+            join
+            assignmentTable
+            join
+            assignmentLine
+            where
+            importHistoryBank.BankStmtImportHistory     == importHistorySelect.RecId    &&
+            importHistoryStmt.BankStmtImpHistBankAcc    == importHistoryBank.RecId      &&
+            assignmentTable.BankStmtImpHistStmt         == importHistoryStmt.RecId      &&
+            assignmentLine.BankStmtAssignHistTable      == assignmentTable.RecId        &&
+            importHistorySelect.RecId                   == importHistory.RecId
+        {
+            this.setJournalTransactionsForStmtLine(assignmentLine);
+        }
+
+ 
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setJournalLineValuesFromVendCustTrans</Name>
+				<Source><![CDATA[
+    /*
+    protected void createNewJournalLine(
+        ITVTMT940BankStmtAssignHistoryLine                  _assginmentLine)
+    {
+        ITVTMT940BankStmtAssignHistoryLine  assignmentLine  = _assginmentLine;
+        LedgerJournalTrans                  journalTrans;
+        
+        // Use condition for matched and halfmatchted(Bank,Cust,Vend nut no Transaction)
+        if (_openTransaction.RecId != 0)
+        {
+            BankStmtISOReportEntry stmtLine =
+                BankStmtISOReportEntry::find(assignmentLine.BankStmtISOReportEntry);
+
+            // Find kind of StatementLine and add to Journal give possibility for extension
+            switch (_openTransaction.TransactionModule)
+            {
+                case ITVTMT940TransactionModule::Cust:
+                    this.setJournalTransactionsForStmtLine(assignmentLine);
+                    
+                    break;
+
+                case ITVTMT940TransactionModule::Vend:
+                    this.setJournalTransactionsForStmtLine(assignmentLine);
+                    
+                    break;
+               
+                /*
+                case ITVTMT940LedgerTransDirection::Customer:
+                    if (_openTransaction.CustVendTransOpenRecId)
+                    {
+                        //journalTrans = this.initNewJournalTrans(journalBankOpen);
+                    }
+                    else
+                    {
+                        //journalTrans = this.initNewJournalTrans(journalBankSettled);
+                    }
+
+                    //journalTrans = this.setJournalTransFromStatementLine(journalTrans, assignmentLine);
+
+                    journalTrans = this.setJournalTransForCustTransaction(journalTrans);
+
+                    break;
+
+                case ITVTMT940LedgerTransDirection::Vendor:
+                    
+                    break;
+
+                case ITVTMT940LedgerTransDirection::Unknown:
+                    //journalTrans = this.initNewJournalTrans(journalUnknown, assignmentLine);
+                    //journalTrans = this.setJournalTransFromStatementLine(journalTrans, assignmentLine);
+                    journalTrans = this.setJournalTransForUnknownTransaction(assignmentLine);
+
+                    break;
+
+                */
+
+                default:
+                
+                    break;
+            }
+
+        }
+        else
+        {
+            this.setJournalTransactionsForStmtLine(assignmentLine);
+        }
+
+        
+    }
+
+    
+    protected LedgerJournalTrans initNewJournalTrans(LedgerJournalTable _ledgerJournalTable, ITVTMT940BankStmtAssignHistoryLine _assginmentLine)
+    {
+        LedgerJournalTrans ledgerJournalTrans;
+        
+        ledgerJournalTrans.clear();
+        ledgerJournalTrans.initValue();
+        ledgJourEngineUnknown.initValue(ledgerJournalTrans);
+        ledgerJournalTrans.JournalNum           = _ledgerJournalTable.JournalNum;
+        ledgerJournalTrans.TransDate            = _assginmentLine.
+        ledgerJournalTrans.LineNum              = LedgerJournalTrans::lastLineNum(ledgerJournalTrans.JournalNum) + 1;
+        ledgerJournalTrans.initValue();
+        
+        /*
+        // Set Dimension for specific Account
+        if (RetailCommercePaymentsFeatureHelper::commercePaymentsEnabledForOrder(_salesTable) && _mcrCustPaymTable)
+        {
+            // For commerce Payments Orders pull in the financial dimensions from the channel where the authorization was made.
+            ledgerJournalTrans.DefaultDimension     = RetailChannelTable::findByRecId(_mcrCustPaymTable.Channel).DefaultDimension;
+        }
+        else
+        {
+            ledgerJournalTrans.DefaultDimension     = _ledgerJournalTable.DefaultDimension;
+        }
+
+        // Set values related to cust or vend
+        ledgerJournalTrans.initFromCustTable(CustTable::find(_salesTable.InvoiceAccount), false);
+
+        // Get Data from Bankstetmentline
+        ledgerJournalTrans.CurrencyCode         = _currencyCode;
+        ledgerJournalTrans.ExchRate             = ExchangeRateHelper::exchRate(ledgerJournalTrans.CurrencyCode);
+        ledgerJournalTrans.PaymReference        = _salesTable.SalesId;
+        ledgerJournalTrans.Voucher              = _voucher;
+        ledgerJournalTrans.Prepayment           = _prePayment;
+        ledgerJournalTrans.TransactionType      = LedgerTransType::Payment;
+        ledgerJournalTrans.SalesOrderId         = _salesTable.SalesId;
+
+        // Used? Copied from orinal 
+        // If the sales order comes from POS then convert the TransDate based on the retail store time zone.
+        if (_salesTable.RetailChannelTable)
+        {
+            RetailChannelTable retailChannelTable = RetailChannelTable::findByRecId(_salesTable.RetailChannelTable);
+            ledgerJournalTrans.TransDate = DateTimeUtil::getSystemDate(retailChannelTable.ChannelTimeZone);
+        }
+        else
+        {
+            ledgerJournalTrans.TransDate = DateTimeUtil::getSystemDate(DateTimeUtil::getUserPreferredTimeZone());
+        }
+
+        // Used? Copied from orinal
+        // Set the Customer Posting Profile to the Prepayment Posting Profile in case the payment is marked as Prepayment
+        // THis is necessary because the logi which sets this field in AX when creating the journal interactively is executed in the UI
+        // Since we are dinamically generating the Prepayment journal via code, we have to set it when setting Prepayment to true.
+        if (_prePayment)
+        {
+            ledgerJournalTrans.PostingProfile = CustParameters::find().PrepaymentPostingProfile;
+        }
+
+        // Used? Copied from orinal
+        if (_mcrCustPaymTable)
+        {
+            ledgerJournalTrans.MCRPaymOrderID = _salesTable.SalesId;
+            ledgerJournalTrans.MCRRefPaymID = _mcrCustPaymTable.RecId;
+        }
+
+        // Used? Copied from orinal
+        RetailCreateLedgerJournalTransForPaymentParameters parameters = RetailCreateLedgerJournalTransForPaymentParameters::construct();
+        parameters.LedgerJournalTrans = ledgerJournalTrans;
+
+        // Used? Copied from orinal
+        RetailTransactionPaymentsHelperExtensions::updateLedgerJournalTransForPayment(parameters);
+        */
+        return ledgerJournalTrans;
+        
+    }
+
+    
+    protected LedgerJournalTrans setJournalTransFromStatementLine(
+        LedgerJournalTrans                  _journalTrans, 
+        ITVTMT940BankStmtAssignHistoryLine  _assignmentLine )
+    {
+        LedgerJournalTrans                  ledgerJournalTrans  = _journalTrans;
+        ITVTMT940BankStmtAssignHistoryLine  assignmentLine      = _assignmentLine;
+
+        BankStmtISOReportEntry              stmtLine            = 
+            BankStmtISOReportEntry::find(assignmentLine.BankStmtISOReportEntry);
+
+        /*
+        BankStmtISOAccountStatement         accStmt             = 
+            BankStmtISOAccountStatement::find(stmtLine.BankStmtISOAccountStatement);
+
+        ledgerJournalTrans.CurrencyCode         = accStmt.AccountCurrency;
+        ledgerJournalTrans.ExchRate             = ExchangeRateHelper::exchRate(ledgerJournalTrans.CurrencyCode);
+        ledgerJournalTrans.PaymReference        = _salesTable.SalesId;
+        ledgerJournalTrans.Voucher              = _voucher;
+        ledgerJournalTrans.Prepayment           = _prePayment;
+        ledgerJournalTrans.TransactionType      = LedgerTransType::Payment;
+        ledgerJournalTrans.SalesOrderId         = _salesTable.SalesId;
+        */
+
+        ledgerJournalTrans.CurrencyCode         = stmtLine.BankStatementCounterCurrency;
+        ledgerJournalTrans.ExchRate             = stmtLine.BankStatementCounterExchangeRate;
+        ledgerJournalTrans.TransactionType      = LedgerTransType::Bank;
+
+        if (stmtLine.AmountCreditDebitIndicator == DebitCredit::Credit)
+        {
+            ledgerJournalTrans.AmountCurCredit  = stmtLine.Amount;
+        }
+        else
+        {
+            ledgerJournalTrans.AmountCurDebit   = stmtLine.Amount;
+        }
+
+        return ledgerJournalTrans;
+    }
+    */
+
+    
+    protected void setJournalLineValuesFromVendCustTrans()
+    {
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setJournalTransactionsForStmtLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Check for exsting open transactions and start creation of lines in leder journal trans
+    /// </summary>
+    /// <param name = "_assginmentLine">
+    /// <c>ITVTMT940BankStmtAssignHistoryLine</c>-record which should be used to create new lines
+    /// </param>
+    protected void setJournalTransactionsForStmtLine(ITVTMT940BankStmtAssignHistoryLine  _assginmentLine)
+    {
+        ITVTMT940BankStmtISOReportEntryOpenTransactions openTransaction;
+        ITVTMT940BankStmtAssignHistoryLine              assginmentLine = _assginmentLine;
+
+        boolean             openTransactionfound;
+        LedgerJournalTrans  ledgerJournalTrans;
+
+        while 
+            select forupdate
+                * 
+            from
+                openTransaction
+            where
+                openTransaction.BankStmtAssignHistLineRecId == assginmentLine.RecId
+        {
+            // Create Journal Line
+            if (!openTransactionfound)
+            {
+                LedgerJournalTrans = this.setJournalTrans(_assginmentLine, openTransaction);
+            
+            // calculate and settle journal line
+            
+                openTransactionfound = true;
+            }
+
+            this.setMT940OpenTransactionWithLedgerJournalTrans(openTransaction, ledgerJournalTrans.RecId);
+        }
+
+        // calculate and settle journal lines
+
+        if (!openTransactionfound)
+        {
+            this.setJournalTrans(_assginmentLine, openTransaction);
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setJournalTrans</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Create new line in <c>LedgerJournalTrans</c>
+    /// </summary>
+    /// <param name = "_assginmentLine">
+    /// <c>ITVTMT940BankStmtAssignHistoryLine</c>-record which should be used for line creation
+    /// </param>
+    /// <param name = "_openTransaction">
+    /// <c>ITVTMT940BankStmtISOReportEntryOpenTransactions</c>-record
+    /// </param>
+    /// <returns>
+    /// <c>LedgerJournalTrans </c>-record which was created
+    ///</returns>
+    protected LedgerJournalTrans setJournalTrans(
+        ITVTMT940BankStmtAssignHistoryLine              _assginmentLine, 
+        ITVTMT940BankStmtISOReportEntryOpenTransactions _openTransaction)
+    {
+        LedgerJournalTrans      ledgerJournalTrans;
+
+        BankStmtISOReportEntry  stmtLine 
+            = BankStmtISOReportEntry::find(_assginmentLine.BankStmtISOReportEntry);
+
+        switch (_openTransaction.TransactionModule)
+        {
+            case ITVTMT940TransactionModule::Cust:
+                if (_openTransaction.RecId != 0)
+                {
+                    if (numOfLinesInJournalCustSettled == 0 || 
+                        MT940Parameters.NumOfLinesPerJournal == numOfLinesInJournalCustSettled)
+                    {
+                        this.createNewJournalHeaders(ITVTMT940JournalType::CustSettled);
+                    }
+                    numOfLinesInJournalCustSettled++;
+                }
+                else
+                {
+                    if (numOfLinesInJournalCustOpen == 0 ||
+                        MT940Parameters.NumOfLinesPerJournal == numOfLinesInJournalCustOpen)
+                    {
+                        this.createNewJournalHeaders(ITVTMT940JournalType::CustOpen);
+                    }
+                    numOfLinesInJournalCustOpen++;
+                }
+
+                break;
+
+            case ITVTMT940TransactionModule::Vend:
+                if (_openTransaction.RecId != 0)
+                {
+                    if (numOfLinesInJournalVendSettled == 0 ||
+                        MT940Parameters.NumOfLinesPerJournal == numOfLinesInJournalVendSettled)
+                    {
+                        this.createNewJournalHeaders(ITVTMT940JournalType::VendSettled);
+                    }
+                    numOfLinesInJournalVendSettled++;
+                }
+                else
+                {
+                    if (numOfLinesInJournalVendOpen == 0 ||
+                        MT940Parameters.NumOfLinesPerJournal == numOfLinesInJournalVendOpen)
+                    {
+                        this.createNewJournalHeaders(ITVTMT940JournalType::VendOpen);
+                    }
+                    numOfLinesInJournalVendOpen++;
+                }
+                
+                break;
+
+            case ITVTMT940TransactionModule::None:
+                if (numOfLinesInJournalUnknown == 0 ||
+                        MT940Parameters.NumOfLinesPerJournal == numOfLinesInJournalUnknown)
+                {
+                    this.createNewJournalHeaders(ITVTMT940JournalType::Unknown);
+                }
+                numOfLinesInJournalUnknown++;
+
+                break;
+        }
+
+        
+        ledgerJournalTrans.clear();
+        ledgerJournalTrans.initValue();
+        
+        switch (_openTransaction.TransactionModule)
+        {
+            case ITVTMT940TransactionModule::Cust:
+                if (_openTransaction.RecId != 0)
+                {
+                    ledgJourEngineCustSettled.initValue(ledgerJournalTrans);
+                    ledgerJournalTrans.JournalNum           = journalCustSettled.JournalNum;
+                }
+                else
+                {
+                    ledgJourEngineCustOpen.initValue(ledgerJournalTrans);
+                    ledgerJournalTrans.JournalNum           = journalCustOpen.JournalNum;
+                }
+
+                break;
+
+            case ITVTMT940TransactionModule::Vend:
+                if (_openTransaction.RecId != 0)
+                {
+                    ledgJourEngineVendSettled.initValue(ledgerJournalTrans);
+                    ledgerJournalTrans.JournalNum           = journalVendSettled.JournalNum;
+                }
+                else
+                {
+                    ledgJourEngineVendOpen.initValue(ledgerJournalTrans);
+                    ledgerJournalTrans.JournalNum           = journalVendOpen.JournalNum;
+                }
+                
+                break;
+
+            case ITVTMT940TransactionModule::None:
+                ledgJourEngineUnknown.initValue(ledgerJournalTrans);
+                ledgerJournalTrans.JournalNum           = journalUnknown.JournalNum;
+
+                break;
+        }
+                
+        ledgerJournalTrans.TransDate            = DateTimeUtil::date(stmtLine.BookingDateTime);
+        
+        switch (_openTransaction.TransactionModule)
+        {
+            case ITVTMT940TransactionModule::Cust:
+                ledgerJournalTrans.AccountType          = LedgerJournalACType::Cust;
+
+                break;
+
+            case ITVTMT940TransactionModule::Vend:
+                ledgerJournalTrans.AccountType          = LedgerJournalACType::Vend;
+
+                break;
+
+            case ITVTMT940TransactionModule::None:
+                LedgerJournalTrans.AccountType          = MT940Parameters.AccountTypeUnknownJournal;
+
+                break;
+        }
+        ledgerJournalTrans.modifiedField(fieldNum(LedgerJournalTrans, AccountType));
+        
+        switch (_openTransaction.TransactionModule)
+        {
+            case ITVTMT940TransactionModule::Cust:
+                LedgerJournalTrans.LedgerDimension     =
+                    LedgerDynamicAccountHelper::getDynamicAccountFromAccountNumber(
+                        CustTransOpen::find(_openTransaction.CustVendTransOpenRecId).AccountNum, LedgerJournalACType::Cust);
+
+                break;
+
+            case ITVTMT940TransactionModule::Vend:
+                LedgerJournalTrans.LedgerDimension     = 
+                    LedgerDynamicAccountHelper::getDynamicAccountFromAccountNumber(
+                        VendTransOpen::find(_openTransaction.CustVendTransOpenRecId).AccountNum, LedgerJournalACType::Vend);
+
+                break;
+
+            case ITVTMT940TransactionModule::None:
+                LedgerJournalTrans.LedgerDimension      =
+                    LedgerDefaultAccountHelper::getDefaultAccountFromMainAccountId(MT940Parameters.MainAccountUnknownJournal);
+
+                break;
+        }
+        ledgerJournalTrans.modifiedField(fieldNum(LedgerJournalTrans, LedgerDimension));
+
+        switch (_openTransaction.TransactionModule)
+        {
+            case ITVTMT940TransactionModule::Cust:
+                if (_openTransaction.RecId != 0)
+                {
+                    ledgJourEngineCustSettled.accountModified(ledgerJournalTrans);
+                    ledgJourEngineCustSettled.currencyModified(ledgerJournalTrans);
+                }
+                else
+                {
+                    ledgJourEngineCustOpen.accountModified(ledgerJournalTrans);
+                    ledgJourEngineCustOpen.currencyModified(ledgerJournalTrans);
+                }
+                break;
+
+            case ITVTMT940TransactionModule::Vend:
+                if (_openTransaction.RecId != 0)
+                {
+                    ledgJourEngineVendSettled.accountModified(ledgerJournalTrans);
+                    ledgJourEngineVendSettled.currencyModified(ledgerJournalTrans);
+                }
+                else
+                {
+                    ledgJourEngineVendOpen.accountModified(ledgerJournalTrans);
+                    ledgJourEngineVendOpen.currencyModified(ledgerJournalTrans);
+                }
+
+                break;
+            
+            case ITVTMT940TransactionModule::None:
+                ledgJourEngineUnknown.accountModified(ledgerJournalTrans);
+
+                //ledgerJournalTrans.CurrencyCode         = stmtLine.BankStatementCounterCurrency;
+                //ledgerJournalTrans.ExchRate             = stmtLine.BankStatementCounterExchangeRate;
+                ledgJourEngineUnknown.currencyModified(ledgerJournalTrans);
+
+                break;
+        }
+
+        if (stmtLine.AmountCreditDebitIndicator == DebitCredit::Credit)
+        {
+            ledgerJournalTrans.AmountCurCredit  = stmtLine.Amount;
+        }
+        else
+        {
+            ledgerJournalTrans.AmountCurDebit   = stmtLine.Amount;
+        }
+
+        ledgerJournalTrans.Txt                  = stmtLine.ReferenceNumber;
+
+        // ToDo: Check usage for this solution
+        //ledgerJournalTrans.defaultRow();
+
+        if (ledgerJournalTrans.validateWrite())
+        {
+            ledgerJournalTrans.insert();
+
+            switch (_openTransaction.TransactionModule)
+            {
+                case ITVTMT940TransactionModule::Cust:
+                    if (_openTransaction.RecId != 0)
+                    {
+                        ledgJourEngineCustSettled.write(ledgerJournalTrans);
+                    }
+                    else
+                    {
+                        ledgJourEngineCustOpen.write(ledgerJournalTrans);
+                    }
+                    break;
+
+                case ITVTMT940TransactionModule::Vend:
+                    if (_openTransaction.RecId != 0)
+                    {
+                        ledgJourEngineVendSettled.write(ledgerJournalTrans);
+                    }
+                    else
+                    {
+                        ledgJourEngineVendOpen.write(ledgerJournalTrans);
+                    }
+
+                    break;
+            
+                case ITVTMT940TransactionModule::None:
+                    ledgJourEngineUnknown.write(ledgerJournalTrans);
+
+                    break;
+            }
+
+            // Add RecId for History
+            ITVTMT940BankStmtISOReportEntryJournalLines mt940JournalLines;
+
+            mt940JournalLines.BankStmtAssignHistLineRecId   = _assginmentLine.RecId;
+            mt940JournalLines.LedgerJournalTransRecId       = ledgerJournalTrans.RecId;
+            mt940JournalLines.BankStmtISOReportEntryRecId   =_assginmentLine.BankStmtISOReportEntry;
+
+            mt940JournalLines.insert();
+        }
+        else
+        {
+            Error("@ITVTMT940:ErrorWhileWritingJournalLine");
+        }
+
+        return ledgerJournalTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setMT940OpenTransactionWithLedgerJournalTrans</Name>
+				<Source><![CDATA[
+    protected void setMT940OpenTransactionWithLedgerJournalTrans(
+        ITVTMT940BankStmtISOReportEntryOpenTransactions _openTransaction,
+        RecId                                           _ledgerJournalTransRecId)
+    {
+        _openTransaction.LedgerJournalTransRecId = _ledgerJournalTransRecId;
+        _openTransaction.update();
+    }
+
+    /*
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name = "_journalTrans"></param>
+    /// <returns></returns>
+    protected LedgerJournalTrans setJournalTransForBankTransaction(LedgerJournalTrans _journalTrans)
+    {
+        LedgerJournalTrans ledgerJournalTrans = _journalTrans;
+
+        
+        ledgerJournalTrans.AccountType          = LedgerJournalACType::Bank;
+
+
+        return ledgerJournalTrans;
+    }
+
+    protected LedgerJournalTrans setJournalTransForCustTransaction(LedgerJournalTrans _journalTrans)
+    {
+        LedgerJournalTrans ledgerJournalTrans = _journalTrans;
+        
+        //ledgerJournalTrans.initFromCustTable(CustTable::find(_salesTable.InvoiceAccount), false);
+        ledgerJournalTrans.AccountType          = LedgerJournalACType::Cust;
+        //ledgerJournalTrans.parmAccount(_salesTable.InvoiceAccount);
+
+        return ledgerJournalTrans;
+    }
+
+    protected LedgerJournalTrans setJournalTransForVendTransaction(LedgerJournalTrans _journalTrans)
+    {
+        LedgerJournalTrans ledgerJournalTrans = _journalTrans;
+
+        ledgerJournalTrans.AccountType          = LedgerJournalACType::Vend;
+
+        return ledgerJournalTrans;
+
+    }
+    */
+
+
+    /*
+    protected void changeHistoryEntryForLedgerJournal()
+    {
+
+    }
+    
+    
+    // Parm-Methods
+
+    public LedgerJournalTable parmJournalBankOpen(LedgerJournalTable _journalBankOpen = journalBankOpen)
+    {
+        journalBankOpen = _journalBankOpen;
+
+        return journalBankOpen;
+    }
+
+    public LedgerJournalTable parmJournalBankSettled(LedgerJournalTable _journalBankSettled = journalBankSettled)
+    {
+        journalBankSettled = _journalBankSettled;
+
+        return journalBankOpen;
+    }
+
+    public LedgerJournalTable parmJournalCustOpen( LedgerJournalTable _journalCustOpen = journalCustOpen)
+    {
+        journalCustOpen = _journalCustOpen;
+
+        return journalCustOpen;
+    }
+
+    public LedgerJournalTable parmJournalCustSettled( LedgerJournalTable _journalCustSettled = journalCustSettled)
+    {
+        journalCustSettled = _journalCustSettled;
+
+        return journalCustSettled;
+    }
+
+    public LedgerJournalTable parmJournalVendOpen( LedgerJournalTable _journalVendOpen = journalVendOpen)
+    {
+        journalVendOpen = _journalVendOpen;
+
+        return journalVendOpen;
+    }
+
+    public LedgerJournalTable parmJournalVendSettled( LedgerJournalTable _journalVendSettled = journalVendSettled)
+    {
+        journalVendSettled = _journalVendSettled;
+
+        return journalVendSettled;
+    }
+    */
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

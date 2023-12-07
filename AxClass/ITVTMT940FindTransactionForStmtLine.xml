@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940FindTransactionForStmtLine</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940
+/// </summary>
+class ITVTMT940FindTransactionForStmtLine
+{
+    RecordInsertList                    openTransactionList;
+    RecordInsertList                    openTransactionHistoryLine;
+    Map                                 assignmentLineProcessingStatus;
+    
+    ITVTMT940BankAccountTable           mt940BankAccount;
+    ITVTMT940Parameters                 mt940Parameters;
+
+    ITVTMT940BankStmtAssignHistoryLine  assignmentLine;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>Construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Constructor method
+    /// </summary>
+    /// <returns><c>ITVTMT940FindTransactionForStmtLine</c>-instance</returns>
+    public ITVTMT940FindTransactionForStmtLine Construct()
+    {
+        ITVTMT940FindTransactionForStmtLine findTransactions =
+            new ITVTMT940FindTransactionForStmtLine();
+
+        return findTransactions;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>clearInstanceMembersForNewRecord</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Clear instance member for new run
+    /// </summary>
+    public void clearInstanceMembersForNewRecord()
+    {
+        assignmentLine.clear();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findReleatedTransactionForStmtLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Run logic to find new Trnasactions for statment line
+    /// </summary>
+    public void findReleatedTransactionForStmtLine()
+    {
+        ITVTMT940BankStmtAssignHistoryLineOpenTransactionSearch transactionSearch;
+
+        transactionSearch.BankStmtAssignHistLineRecId = assignmentLine.RecId;
+
+        if (!this.findOpenTransactionsByBusinesspartner())
+        {
+            
+            if (!this.findOpenTransactionsWithoutBusinessPartner())
+            {
+                if (this.findBusinessPartnerAndOpenTransactionsByReferences())
+                {
+                    transactionSearch.SearchStatusOpenTransaction = 
+                        ITVTMT940SearchStatusOpenTransaction::FoundWithoutBusinessPartnerAndTransaction;
+                }
+                else
+                {
+                    transactionSearch.SearchStatusOpenTransaction = ITVTMT940SearchStatusOpenTransaction::NoMatch;
+                }
+            }
+            else
+            {
+                transactionSearch.SearchStatusOpenTransaction = 
+                    ITVTMT940SearchStatusOpenTransaction::FoundByKeyWordSearch;
+            }
+        }
+        else
+        {
+            transactionSearch.SearchStatusOpenTransaction = 
+                ITVTMT940SearchStatusOpenTransaction::FoundByBusinessPartnerTransaction;
+        }
+
+        openTransactionHistoryLine.add(transactionSearch);
+
+        assignmentLineProcessingStatus.insert(
+            assignmentLine.RecId, ITVTMT940ProcessingStatus::SearchForOpenTransactionDone);
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findOpenTransactionsByBusinesspartner</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find open transaction for a known business partner
+    /// </summary>
+    /// <returns>true if transaction found, otherwise false</returns>
+    protected boolean findOpenTransactionsByBusinesspartner()
+    {
+        Query           openTransactions;
+        QueryRun        runOpenTransactions;
+        
+        boolean         ret = false;
+
+        CustTrans       custTrans;
+        CustTransOpen   custTransOpen;
+        
+        openTransactions    = this.findOpenTransactionsForBusinessPartner(ITVTMT940TransactionModule::Cust);
+        runOpenTransactions = new QueryRun(openTransactions);
+
+        while (runOpenTransactions.next())
+        {
+            custTrans           = runOpenTransactions.get(tableNum(CustTrans));
+            custTransOpen       = runOpenTransactions.get(tableNum(CustTransOpen));
+
+            ret = this.findCustTransactionInBankStmtReferences(custTrans, custTransOpen.RecId);
+
+            
+            /// 15.07.2021
+            if (!ret)
+            {
+                ret = this.findCustTransactionwithSearchConfiguration(custTrans, custTransOpen.RecId);
+            }
+            
+
+        }
+                
+        return ret;
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findOpenTransactionsForBusinessPartner</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// This method creates a query to find a trasaction for a specific business partner
+    /// </summary>
+    /// <param name = "_module"><c>ITVTMT940TransactionModule</c></param>
+    /// <returns><c>Query</c>-object</returns>
+    protected Query findOpenTransactionsForBusinessPartner(ITVTMT940TransactionModule _module)
+    {
+        Query                   openTransactions    = new Query();
+
+        QueryBuildDataSource    qdbsEntryBusinessPartner;
+        QueryBuildDataSource    qdbsOpenCustTrans;
+        QueryBuildDataSource    qdbsCustTrans;
+        
+        qdbsEntryBusinessPartner = openTransactions.addDataSource(tableNum(ITVTMT940BankStmtISOReportEntryBusinessPartner));
+        qdbsEntryBusinessPartner.addRange(
+            fieldNum(ITVTMT940BankStmtISOReportEntryBusinessPartner, BankStmtAssignHistLineRecId)).value(
+            queryValue(assignmentLine.RecId));
+        
+        qdbsOpenCustTrans = qdbsEntryBusinessPartner.addDataSource(tableNum(CustTransOpen));
+        qdbsOpenCustTrans.relations(false);
+        qdbsOpenCustTrans.joinMode(JoinMode::InnerJoin);
+        qdbsOpenCustTrans.addLink(
+            fieldNum(ITVTMT940BankStmtISOReportEntryBusinessPartner, CustAccount), fieldNum(CustTransOpen,AccountNum));
+        qdbsOpenCustTrans.addSortField(fieldNum(CustTransOpen, RecId));
+
+        // Needed?
+        qdbsCustTrans = qdbsOpenCustTrans.addDataSource(tableNum(CustTrans));
+        qdbsCustTrans.relations(true);
+        
+        return openTransactions;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findCustTransactionInBankStmtReferences</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find customer transaction by reference
+    /// </summary>
+    /// <param name = "_custTrans"><c>CustTrans</c>-record</param>
+    /// <param name = "_custTransOpenRecid"><c>ReciId</c> from open <c>OpenCustTrans</c></param>
+    /// <returns>true, if matched; otherwise false</returns>
+    protected boolean findCustTransactionInBankStmtReferences(CustTrans _custTrans, RecId _custTransOpenRecid)
+    {
+        boolean ret = false;
+
+        ITVTMT940BankStmtISOReportEntryReferences           references;
+        ITVTMT940BankStmtISOReportEntryOpenTransactions     openTransactions;
+        
+        while
+            select  RecId
+            from    references
+            where   references.ReportEntryRecId == assignmentLine.BankStmtISOReportEntry    &&
+                    references.KeyField         != ITVTMT940KeyField::Concat                &&
+                    ( references.ReferenceValue like _custTrans.Invoice                     ||
+                      references.ReferenceValue like _custTrans.Txt )
+        {
+            openTransactions.clear();
+            
+            openTransactions.BankStmtAssignHistLineRecId    = assignmentLine.RecId;
+            openTransactions.BankStmtISOReportEntryRecId    = assignmentLine.BankStmtISOReportEntry;
+            openTransactions.CustVendTransRecId             = _custTrans.RecId;
+            openTransactions.CustVendTransOpenRecId         = _custTransOpenRecId;
+            openTransactions.TransactionModule              = ITVTMT940TransactionModule::Cust;
+
+            openTransactionList.add(openTransactions);
+
+            ret = true;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findCustTransactionWithSearchConfiguration</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Search for open transactions by using extended logic
+    /// </summary>
+    /// <returns><c>true</c> if open transaction  found; otherwise <c>false</c></returns>
+    protected boolean findCustTransactionWithSearchConfiguration(CustTrans _custTrans, RecId _custTransOpenRecid)
+    {
+        boolean ret = false;
+
+        ITVTMT940BankStmtISOReportEntryReferences           references;
+        ITVTMT940BankStmtISOReportEntryOpenTransactions     openTransactions;
+        
+        while
+            select  RecId, ReferenceValuesConcat
+            from    references
+            where   references.ReportEntryRecId         == assignmentLine.BankStmtISOReportEntry    &&
+                    references.KeyField                 == ITVTMT940KeyField::Concat                &&
+                    references.ReferenceValuesConcat    != ""                                       &&
+                    ( references.ReferenceValuesConcat  like strFmt('*%1*', _custTrans.Invoice)     ||
+                      references.ReferenceValuesConcat  like strFmt('*%1*', _custTrans.Txt ))
+        {
+            
+            if (this.useSearchConfiguration(references.ReferenceValuesConcat, _custTrans.Invoice, _custTrans.Txt))
+            {
+                openTransactions.clear();
+            
+                openTransactions.BankStmtAssignHistLineRecId    = assignmentLine.RecId;
+                openTransactions.BankStmtISOReportEntryRecId    = assignmentLine.BankStmtISOReportEntry;
+                openTransactions.CustVendTransRecId             = _custTrans.RecId;
+                openTransactions.CustVendTransOpenRecId         = _custTransOpenRecId;
+                openTransactions.TransactionModule              = ITVTMT940TransactionModule::Cust;
+
+                openTransactionList.add(openTransactions);
+
+                ret = true;
+            }
+        }
+                
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>useSearchConfiguration</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Check reference value and transaction information for a match
+    /// </summary>
+    /// <param name = "_referenceValue"><c>ITVTMT940ReferenceValuesConcat</c> to search in</param>
+    /// <param name = "_invoice"><c>InvoiceID</c> to search for</param>
+    /// <param name = "_txt"><c>TransactionTextLarge</c> to serach for</param>
+    /// <returns></returns>
+    protected boolean useSearchConfiguration(
+        ITVTMT940ReferenceValuesConcat  _referenceValue, 
+        InvoiceId                       _invoice, 
+        TransactionTextLarge            _txt)
+    {
+        boolean ret = false;
+
+        if (_invoice != "" && strScan(_referenceValue, _invoice, 0, strLen(_referenceValue)))
+        {
+            ret = true;    
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findVendTransactionInBankStmtReferences</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find vendor transaction by reference
+    /// </summary>
+    /// <param name = "_vendTrans"><c>VendTrans</c>-record</param>
+    /// <param name = "_vendTransOpenRecid"><c>RecId</c> from <c>OpenVendTrans</c></param>
+    protected void findVendTransactionInBankStmtReferences(VendTrans _vendTrans, RecId _vendTransOpenRecid)
+    {
+        ITVTMT940BankStmtISOReportEntryReferences           references;
+        ITVTMT940BankStmtISOReportEntryOpenTransactions     openTransactions;
+
+        while 
+            select  RecId
+            from    references
+            where   references.ReportEntryRecId == assignmentLine.BankStmtISOReportEntry    &&
+                    ( references.ReferenceValue like _vendTrans.Invoice                     ||
+                      references.ReferenceValue like _vendTrans.Txt )
+        {
+            
+            openTransactions.clear();
+
+            openTransactions.BankStmtAssignHistLineRecId    = assignmentLine.RecId;
+            openTransactions.BankStmtISOReportEntryRecId    = assignmentLine.BankStmtISOReportEntry;
+            openTransactions.CustVendTransRecId             = _vendTrans.RecId;
+            openTransactions.CustVendTransOpenRecId         = _vendTransOpenRecId;
+            openTransactions.TransactionModule              = ITVTMT940TransactionModule::Vend;
+
+            openTransactionList.add(openTransactions);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findOpenTransactionsWithoutBusinessPartner</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find transactions without business partner
+    /// </summary>
+    /// <returns>true, if found; otherwise false</returns>
+    protected boolean findOpenTransactionsWithoutBusinessPartner()
+    {
+        boolean ret;
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findBusinessPartnerAndOpenTransactionsByReferences</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Find Transactions and business partner by reference values from bank statement line
+    /// </summary>
+    /// <returns>true if found; otherwise false</returns>
+    protected boolean findBusinessPartnerAndOpenTransactionsByReferences()
+    {
+        boolean ret;
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmOpenTransactionList</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets openTransationList-Instancevariable of type <c>RecordInsertList</c>
+    /// </summary>
+    /// <param name = "_openTransationList">
+    /// New value of type <c>RecordInsertList</c> for openTransationList
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>RecordInsertList</c> in openTransationList
+    /// </returns>
+    public RecordInsertList parmOpenTransactionList(RecordInsertList _openTransationList = openTransactionList)
+    {
+        openTransactionList = _openTransationList;
+
+        return openTransactionList;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmOpenTransactionHistoryLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets openTransactionHistoryLine-Instancevariable of type <c>RecordInsertList</c>
+    /// </summary>
+    /// <param name = "_openTransactionHistoryLine">
+    /// New value of type <c>RecordInsertList</c> for openTransactionHistoryLine
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>RecordInsertList</c> in openTransactionHistoryLine
+    /// </returns>
+    public RecordInsertList parmOpenTransactionHistoryLine(
+        RecordInsertList _openTransationHistoryLine = openTransactionHistoryLine)
+    {
+        openTransactionHistoryLine = _openTransationHistoryLine;
+
+        return openTransactionHistoryLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssignmentLineProcessingStatus</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets assignmentLineProcessingStatus-Instancevariable of type <c>Map</c>
+    /// </summary>
+    /// <param name = "_assignmentLineProcessingStatus">
+    /// New value of type <c>Map</c> for assignmentLineProcessingStatus
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>Map</c> in assignmentLineProcessingStatus
+    /// </returns>
+    public Map parmAssignmentLineProcessingStatus(Map _assignmentLineProcessingStatus = assignmentLineProcessingStatus)
+    {
+        assignmentLineProcessingStatus = _assignmentLineProcessingStatus;
+
+        return assignmentLineProcessingStatus;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssignmentLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets assignmentLine-Instancevariable of type <c>ITVTMT940BankStmtAssignHistoryLine</c>
+    /// </summary>
+    /// <param name = "_assignmentLine">
+    /// New value of type <c>ITVTMT940BankStmtAssignHistoryLine</c> for assignmentLine
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940BankStmtAssignHistoryLine</c> in assignmentLine
+    /// </returns>
+    public ITVTMT940BankStmtAssignHistoryLine parmAssignmentLine(
+        ITVTMT940BankStmtAssignHistoryLine _assignmentLine = assignmentLine)
+    {
+        assignmentLine = _assignmentLine;
+
+        return assignmentLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmMT940Parameters</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets mt940Parameters-Instancevariable of type <c>ITVTMT940Parameters</c>
+    /// </summary>
+    /// <param name = "_mt940Parameters">
+    /// New value of type <c>ITVTMT940Parameters</c> for mt940Parameters
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940Parameters</c> in mt940Parameters
+    /// </returns>
+    public ITVTMT940Parameters parmMT940Parameters(
+        ITVTMT940Parameters _mt940Parameters = mt940Parameters)
+    {
+        mt940Parameters = _mt940Parameters;
+
+        return mt940Parameters;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmMT940BankAccount</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets or sets mt940BankAccount-Instancevariable of type <c>ITVTMT940BankAccountTable</c>
+    /// </summary>
+    /// <param name = "_mt940BankAccount">
+    /// New value of type <c>ITVTMT940BankAccountTable</c> for mt940BankAccount
+    /// which should be set; otherwise it will use the value from instance
+    /// </param>
+    /// <returns>
+    /// Actual value of type <c>ITVTMT940BankAccountTable</c> in mt940BankAccount
+    /// </returns>
+    public ITVTMT940BankAccountTable parmMT940BankAccount(
+        ITVTMT940BankAccountTable _mt940BankAccount = mt940BankAccount)
+    {
+        mt940BankAccount = _mt940BankAccount;
+
+        return mt940BankAccount;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

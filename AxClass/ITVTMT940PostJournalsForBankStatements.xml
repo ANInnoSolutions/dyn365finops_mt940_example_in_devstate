@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940PostJournalsForBankStatements</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940
+/// 
+/// This class holds all logic to post created journals
+/// </summary>
+class ITVTMT940PostJournalsForBankStatements
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>processJournalPostingForBankStatements</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Proceed the posting logic for every entry in <c>List</c> with import history entries
+    /// </summary>
+    /// <param name = "_importHistoryList"><c>List</c> of type <c>ITVTMT940BankStmtImportHistory</c>to proceed</param>
+    public void processJournalPostingForBankStatements(List _createdImportHistorys)
+    {
+
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940BankAccountTable_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT940 extension for BankAccountTable
+/// </summary>
+[ExtensionOf(tableStr(BankAccountTable))]
+final class ITVTMT940BankAccountTable_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>isMT940JournalCreationAfterImport</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks BankAccountTable for ITVT MT940 processing values
+    /// </summary>
+    /// <returns>true if journals should be created</returns>
+    public boolean isMT940JournalCreationAfterImport()
+    {
+        return this.isMT940JournalProcessingEnabled() && this.ITVTMT940JournalCreationAfterImportEnabled;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isMT940JournalProcessingEnabled</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks the field ITVTMT940JournalProcessingEnabled
+    /// </summary>
+    /// <returns>true if ITVTMT940JournalProcessing ist true; otherwise false</returns>
+    public boolean isMT940JournalProcessingEnabled()
+    {
+        return this.ITVTMT940JournalProcessingEnabled;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

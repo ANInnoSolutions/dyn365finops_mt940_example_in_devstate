@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMT940FindReleatedTransactionsForBankStatements</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// ITVT MT-940 processing class to find related transaction for bank statement
+/// </summary>
+class ITVTMT940FindReleatedTransactionsForBankStatements
+{
+    ITVTMT940Parameters         mt940Parameters;
+    ITVTMT940BankAccountTable   mt940BankAccount;
+
+    Map                         assignmentLineProcessingStatus;
+
+    RecordInsertList            referencesList;
+
+    RecordInsertList            businessPartnerSearch;
+    RecordInsertList            reportEntryBusinessPartners;
+
+    RecordInsertList            openTransactionList;
+    RecordInsertList            openTransactionHistoryLine;
+    
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>Construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <returns><c>ITVTMT940FindReleatedTransactionsForBankStatements</c>-Class instance</returns>
+    public static ITVTMT940FindReleatedTransactionsForBankStatements Construct()
+    {
+        
+        ITVTMT940FindReleatedTransactionsForBankStatements processFindings =
+            new ITVTMT940FindReleatedTransactionsForBankStatements();
+
+        processFindings.initProcessFindings();
+
+        return processFindings;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initProcessFindings</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Innit values for processing
+    /// </summary>
+    protected void initProcessFindings()
+    {
+        
+        mt940Parameters                 = ITVTMT940Parameters::find();
+        //mt940BankAccount                = ITVTMT940BankAccountTable::find(_bankAccountId);
+
+        assignmentLineProcessingStatus  = new Map(Types::Int64, Types::Enum);
+
+        referencesList                  = new RecordInsertList(tableNum(ITVTMT940BankStmtISOReportEntryReferences));
+
+        businessPartnerSearch           = new RecordInsertList(tableNum(ITVTMT940BankStmtAssignHistoryLineBusinessPartnerSearch));
+        reportEntryBusinessPartners     = new RecordInsertList(tableNum(ITVTMT940BankStmtISOReportEntryBusinessPartner));
+
+        openTransactionList             = new RecordInsertList(tableNum(ITVTMT940BankStmtISOReportEntryOpenTransactions));
+        openTransactionHistoryLine      = new RecordInsertList(tableNum(ITVTMT940BankStmtAssignHistoryLineOpenTransactionSearch));       
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processFindingsForBankStaements</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Working method to process the transaction search
+    /// </summary>
+    /// <param name = "_importHistoryList"><c>List</c> of type <c>ITVTMT940BankStmtImportHistory</c>to proceed</param>
+    public void processFindingsForBankStaements(List _importHistoryList)
+    {
+        ListEnumerator enumerator = _importHistoryList.getEnumerator();
+
+        /*
+        try
+        {
+        */
+            while (enumerator.moveNext())
+            {
+                ITVTMT940BankStmtImportHistory importHistory = enumerator.current();
+
+                // If parameters are set to create one Journal for the complete Import
+                // this.buildQueryForProcessing(importHistory);
+                // this.runCreationForReferceLines(this.buildQueryForProcessing(importHistory, forReferencList));
+                // this.processFindingsForImportHistoryRecord(this.buildQueryForProcessing(importHistory, forFinding));
+                this.runCreationForReferenceLines(importHistory);
+                this.writeReferenceLines();
+                
+                this.processBuisnessPartnerSearchForImportHistoryRecord(importHistory);
+                this.writeBusinessPartner();
+                
+                this.processTransactionSearchForImportHistoryRecord(importHistory);
+                this.writeOpenTransactions();
+
+                // ToDo: UpdateStatus for Lines without match or releated to the BankAccount
+            }
+        /*
+        }
+        catch
+        {
+            Error("Error while process findings for releated transactions");
+        }
+        */
+    
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runCreationForReferenceLines</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Proceed the reference line creation related to all lines in one import.
+    /// This is the main method which start the related logic and do the database operation.
+    /// </summary>
+    /// <param name = "_importHistory"><c>ITVTMT940BankStmtImportHistory</c>-record to create reference lines for</param>
+    protected void runCreationForReferenceLines(ITVTMT940BankStmtImportHistory _importHistory)
+    {
+        ITVTMT940BankStmtImportHistory              importHistory;
+        ITVTMT940BankStmtImportHistoryBankAccount   importHistoryBank;
+        ITVTMT940BankStmtImportHistoryStatement     importHistoryStmt;
+        ITVTMT940BankStmtAssignHistoryTable         assignmentTable;
+        ITVTMT940BankStmtAssignHistoryLine          assignmentLine;
+        /*
+        BankStmtISOReportEntry                      reportEntry;
+        ITVTMT940GVCCodeSetup                       gvcCodes;
+        */
+
+        ITVTMT940CreateBankStmtReferenceLines createReferences = new ITVTMT940CreateBankStmtReferenceLines();
+        
+        createReferences.parmMT940Parameters(mt940Parameters);
+        createReferences.parmAssignmentLineProcessingStatus(assignmentLineProcessingStatus);
+
+        createReferences.parmReferencesList(referencesList);
+        
+        /*
+        while select
+                RecId, BankStmtISOReportEntry, BankStmtISOAccStmt
+            from
+                assignmentLine
+            join
+                assignmentTable
+            join
+                importHistory
+            join
+                importHistoryBank
+            join
+                importHistoryStmt
+            
+            join
+                reportEntry
+            join
+                gvcCodes
+            where
+                importHistory.RecId                         == _importHistory.RecId                     &&
+                importHistoryBank.BankStmtImportHistory     == importHistory.RecId                      &&
+                importHistoryStmt.BankStmtImpHistBankAcc    == importHistoryBank.RecId                  &&
+                assignmentTable.BankStmtImpHistBankAcc      == importHistoryStmt.RecId                  &&
+                assignmentLine.BankStmtAssignHistTable      == assignmentTable.RecId                    &&
+                reportEntry.RecId                           == assignmentLine.BankStmtISOReportEntry    &&
+                gvcCodes.GVCCode                            == reportEntry.ITVTMT940GVCCode             &&
+                gvcCodes.IgnoreForProcessing                == NoYes::No 
+        */
+        while select
+                importHistory
+            join
+                importHistoryBank
+            join
+                importHistoryStmt
+            join
+                assignmentTable
+            join
+                assignmentLine
+            where
+                importHistoryBank.BankStmtImportHistory     == importHistory.RecId      &&
+                importHistoryStmt.BankStmtImpHistBankAcc    == importHistoryBank.RecId  &&
+                assignmentTable.BankStmtImpHistStmt         == importHistoryStmt.RecId  &&
+                assignmentLine.BankStmtAssignHistTable      == assignmentTable.RecId    &&
+                importHistory.RecId                         == _importHistory.RecId                
+        {
+            createReferences.clearInstanceMembersForNewRecord();
+
+            createReferences.parmAssignmentLine(assignmentLine);
+
+            createReferences.parmReportEntry(
+                BankStmtISOReportEntry::find(assignmentLine.BankStmtISOReportEntry));
+
+            createReferences.parmMT940BankAccount(
+                ITVTMT940BankAccountTable::findByBankStmtISOAccStmtRecId(assignmentLine.BankStmtISOAccStmt));
+
+            createReferences.runCreateEntrysInReferenceTable();
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processBuisnessPartnerSearchForImportHistoryRecord</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Proceed the search for business partners related to all lines in one import.
+    /// This is the main method which start the related logic and do the database operation.
+    /// </summary>
+    /// <param name = "_importHistory"><c>ITVTMT940BankStmtImportHistory</c>-record to find businness partners for</param>
+    protected void processBuisnessPartnerSearchForImportHistoryRecord(ITVTMT940BankStmtImportHistory _importHistory)
+    {
+        ITVTMT940BankStmtImportHistory              importHistory;
+        ITVTMT940BankStmtImportHistoryBankAccount   importHistoryBank;
+        ITVTMT940BankStmtImportHistoryStatement     importHistoryStmt;
+        ITVTMT940BankStmtAssignHistoryTable         assignmentTable;
+        ITVTMT940BankStmtAssignHistoryLine          assignmentLine;
+        /*
+        BankStmtISOReportEntry                      reportEntry;
+        ITVTMT940GVCCodeSetup                       gvcCodes;
+        */
+
+        ITVTMT940FindBuisnessPartnerForStmtLine findBusinessPartners = new ITVTMT940FindBuisnessPartnerForStmtLine();
+
+        findBusinessPartners.parmMT940Parameters(mt940Parameters);
+        findBusinessPartners.parmAssignmentLineProcessingStatus(assignmentLineProcessingStatus);
+
+        findBusinessPartners.parmBusinessPartnerSearch(businessPartnerSearch);
+        findBusinessPartners.parmReportEntryBusinessPartners(reportEntryBusinessPartners);
+        
+        /*
+        while select
+                RecId, BankStmtISOReportEntry
+            from
+                assignmentLine
+            join
+                assignmentTable
+            join
+                importHistory
+            join
+                importHistoryBank
+            join
+                importHistoryStmt
+            
+            join
+                reportEntry
+            join
+                gvcCodes
+            where
+                importHistory.RecId                         == _importHistory.RecId                     &&
+                importHistoryBank.BankStmtImportHistory     == importHistory.RecId                      &&
+                importHistoryStmt.BankStmtImpHistBankAcc    == importHistoryBank.RecId                  &&
+                assignmentTable.BankStmtImpHistStmt         == importHistoryStmt.RecId                  &&
+                assignmentLine.BankStmtAssignHistTable      == assignmentTable.RecId                    &&
+                reportEntry.RecId                           == assignmentLine.BankStmtISOReportEntry    &&
+                gvcCodes.GVCCode                            == reportEntry.ITVTMT940GVCCode             &&
+                gvcCodes.IgnoreForProcessing                == NoYes::No 
+        */
+        while select
+                importHistory
+            join
+                importHistoryBank
+            join
+                importHistoryStmt
+            join
+                assignmentTable
+            join
+                assignmentLine
+            where
+                importHistoryBank.BankStmtImportHistory     == importHistory.RecId      &&
+                importHistoryStmt.BankStmtImpHistBankAcc    == importHistoryBank.RecId  &&
+                assignmentTable.BankStmtImpHistStmt         == importHistoryStmt.RecId  &&
+                assignmentLine.BankStmtAssignHistTable      == assignmentTable.RecId    &&
+                importHistory.RecId                         == _importHistory.RecId
+        {
+            findBusinessPartners.clearInstanceMembersForNewRecord();
+
+            findBusinessPartners.parmAssignmentLine(
+                ITVTMT940BankStmtAssignHistoryLine::findRecId(assignmentLine.RecId));
+
+            findBusinessPartners.parmReportEntry(
+                BankStmtISOReportEntry::find(assignmentLine.BankStmtISOReportEntry));
+
+            findBusinessPartners.parmMT940BankAccount(
+                ITVTMT940BankAccountTable::findByBankStmtISOAccStmtRecId(assignmentLine.BankStmtISOAccStmt));
+
+            findBusinessPartners.findBusinessPartnerForStmtLine();
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processTransactionSearchForImportHistoryRecord</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Procced the search for transactions related to all lines in one import.
+    /// This is the main method which start the related logic and do the database operation.
+    /// </summary>
+    /// <param name = "_importHistory"><c>ITVTMT940BankStmtImportHistory</c>-record to proceed transaction search for</param>
+    protected void processTransactionSearchForImportHistoryRecord(ITVTMT940BankStmtImportHistory _importHistory)
+    {
+        ITVTMT940BankStmtImportHistory              importHistory;
+        ITVTMT940BankStmtImportHistoryBankAccount   importHistoryBank;
+        ITVTMT940BankStmtImportHistoryStatement     importHistoryStmt;
+        ITVTMT940BankStmtAssignHistoryTable         assignmentTable;
+        ITVTMT940BankStmtAssignHistoryLine          assignmentLine;
+        /*
+        BankStmtISOReportEntry                      reportEntry;
+        ITVTMT940GVCCodeSetup                       gvcCodes;
+        */
+
+        ITVTMT940FindTransactionForStmtLine findTransactions = new ITVTMT940FindTransactionForStmtLine();
+
+        findTransactions.parmMT940Parameters(mt940Parameters);
+        findTransactions.parmMT940BankAccount(mt940BankAccount);
+        findTransactions.parmAssignmentLineProcessingStatus(assignmentLineProcessingStatus);
+        
+        findTransactions.parmOpenTransactionList(openTransactionList);
+        findTransactions.parmOpenTransactionHistoryLine(openTransactionHistoryLine);
+
+        /*
+        while select
+                RecId, BankStmtISOReportEntry
+            from
+                assignmentLine
+            join
+                assignmentTable
+            join
+                importHistory
+            join
+                importHistoryBank
+            join
+                importHistoryStmt
+            
+            join
+                reportEntry
+            join
+                gvcCodes
+            where
+                importHistory.RecId                         == _importHistory.RecId                     &&
+                importHistoryBank.BankStmtImportHistory     == importHistory.RecId                      &&
+                importHistoryStmt.BankStmtImpHistBankAcc    == importHistoryBank.RecId                  &&
+                assignmentTable.BankStmtImpHistStmt         == importHistoryStmt.RecId                  &&
+                assignmentLine.BankStmtAssignHistTable      == assignmentTable.RecId                    &&
+                reportEntry.RecId                           == assignmentLine.BankStmtISOReportEntry    &&
+                gvcCodes.GVCCode                            == reportEntry.ITVTMT940GVCCode             &&
+                gvcCodes.IgnoreForProcessing                == NoYes::No 
+        */
+        while select
+                importHistory
+            join
+                importHistoryBank
+            join
+                importHistoryStmt
+            join
+                assignmentTable
+            join
+                assignmentLine
+            where
+                importHistoryBank.BankStmtImportHistory     == importHistory.RecId      &&
+                importHistoryStmt.BankStmtImpHistBankAcc    == importHistoryBank.RecId  &&
+                assignmentTable.BankStmtImpHistStmt         == importHistoryStmt.RecId  &&
+                assignmentLine.BankStmtAssignHistTable      == assignmentTable.RecId    &&
+                importHistory.RecId                         == _importHistory.RecId
+        {
+            findTransactions.clearInstanceMembersForNewRecord();
+
+            findTransactions.parmAssignmentLine(
+                ITVTMT940BankStmtAssignHistoryLine::findRecId(assignmentLine.RecId));
+
+            findTransactions.parmMT940BankAccount(
+                ITVTMT940BankAccountTable::findByBankStmtISOAccStmtRecId(assignmentLine.BankStmtISOAccStmt));
+
+            findTransactions.findReleatedTransactionForStmtLine();
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>writeReferenceLines</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Write new created reference lines to the database.
+    /// </summary>
+    protected void writeReferenceLines()
+    {
+        int numOfReferenzLinesInserted;
+        int numOfAssignmentLinesUpdated;
+        
+        try
+        {
+            ttsbegin;
+
+            numOfReferenzLinesInserted  = referencesList.insertDatabase();
+            numOfAssignmentLinesUpdated = this.changeHistoryLineProcessingStatus();
+
+            Info(strFmt("%1 References Lines inserted for %2 Statement Lines",
+                numOfReferenzLinesInserted, numOfAssignmentLinesUpdated));
+
+            ttscommit;
+        }
+        catch
+        {
+            Error("Error while inserting References for Bank Statement Lines");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>writeBusinessPartner</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// write new created business partner lines to the database
+    /// </summary>
+    protected void writeBusinessPartner()
+    {
+        int numOfBusinessPartnerLinesInserted;
+        int numOfBusinessPartnerStatusLinesInserted;
+        int numOfAssignmentLinesUpdated;
+        
+        try
+        {
+            ttsbegin;
+
+            numOfBusinessPartnerLinesInserted       = businessPartnerSearch.insertDatabase();
+            numOfBusinessPartnerStatusLinesInserted = reportEntryBusinessPartners.insertDatabase();
+            numOfAssignmentLinesUpdated             = this.changeHistoryLineProcessingStatus();
+
+            Info(strFmt("%1 Business Partner found for %2 Statement Lines", 
+                numOfBusinessPartnerLinesInserted, numOfAssignmentLinesUpdated));
+
+            ttscommit;
+        }
+        catch
+        {
+            Error("Error while inserting Business Partner for Bank Statement Lines");
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>writeOpenTransactions</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Write new created open transaction lines to the database
+    /// </summary>
+    protected void writeOpenTransactions()
+    {
+        int numOfOpenTransactionLinesInserted;
+        int numOfOpenTransactionStatusLinesInserted;
+        int numOfAssignmentLinesUpdated;
+        
+        try
+        {
+            ttsbegin;
+
+            numOfOpenTransactionLinesInserted       = openTransactionList.insertDatabase();
+            numOfOpenTransactionStatusLinesInserted = openTransactionHistoryLine.insertDatabase();
+            numOfAssignmentLinesUpdated             = this.changeHistoryLineProcessingStatus();
+
+            Info(strFmt("%1 Open Transactions found for %2 Statement Lines",
+                numOfOpenTransactionLinesInserted, numOfAssignmentLinesUpdated));
+
+            ttscommit;
+        }
+        catch
+        {
+            Error("Error while inserting Business Partner for Bank Statement Lines");
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>changeHistoryLineProcessingStatus</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Change the values for the history line
+    /// </summary>
+    /// <returns>number of updated records </returns>
+    protected int changeHistoryLineProcessingStatus()
+    {
+        int                                 numOfRecords;
+        ITVTMT940BankStmtAssignHistoryLine  assignmentLine;
+
+        MapEnumerator enumerateAssignLineStatus = new MapEnumerator(assignmentLineProcessingStatus);
+
+        while (enumerateAssignLineStatus.moveNext())
+        {
+            assignmentLine = ITVTMT940BankStmtAssignHistoryLine::findRecId(enumerateAssignLineStatus.currentKey(), true);
+            assignmentLine.ProcessingStatus = enumerateAssignLineStatus.currentValue();
+
+            assignmentLine.update();
+
+            numOfRecords++;
+        }
+
+        return numOfRecords;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
