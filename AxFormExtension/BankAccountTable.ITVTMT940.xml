@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>BankAccountTable.ITVTMT940</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControl0afsqayg1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>BankAccountTable_ITVTMT940JournalCreationAfterImportEnabled</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTMT940JournalCreationAfterImportEnabled</DataField>
+				<DataSource>BankAccountTable</DataSource>
+			</FormControl>
+			<Parent>BankReconciliationAutomation</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlbstg2rvy1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>BankAccountTable_ITVTMT940JournalProcessingEnabled</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTMT940JournalProcessingEnabled</DataField>
+				<DataSource>BankAccountTable</DataSource>
+			</FormControl>
+			<Parent>BankReconciliation_Parameter</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

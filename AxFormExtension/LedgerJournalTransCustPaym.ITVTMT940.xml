@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>LedgerJournalTransCustPaym.ITVTMT940</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlm1twjyv21</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>LedgerJournalTrans_ITVTMT940ReadyForPosting</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTMT940ReadyForPosting</DataField>
+				<DataSource>LedgerJournalTrans</DataSource>
+			</FormControl>
+			<Parent>overviewGrid</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>ErrorExist</PreviousSibling>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

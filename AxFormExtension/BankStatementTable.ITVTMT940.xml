@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>BankStatementTable.ITVTMT940</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControl4lc43wpk1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormTabPageControl">
+				<Name>ITVTMT940ReferenceFieldTabPage</Name>
+				<Pattern>FieldsFieldGroups</Pattern>
+				<PatternVersion>1.1</PatternVersion>
+				<Type>TabPage</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>ITVTMT940ReferenceFields</Name>
+						<Type>Group</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField00</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField00</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField10</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField10</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField20</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField20</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField21</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField21</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField22</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField22</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField23</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField23</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField24</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField24</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField25</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField25</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField26</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField26</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField27</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField27</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField28</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField28</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField29</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField29</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField30</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField30</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField31</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField31</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField32</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField32</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField33</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField33</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField34</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField34</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField60</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField60</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField61</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField61</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField62</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField62</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTMT940ReferenceFields_ITVTMT940KeyField63</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ITVTMT940KeyField63</DataField>
+								<DataSource>BankStmtISOReportEntry</DataSource>
+							</AxFormControl>
+						</Controls>
+						<DataGroup>ITVTMT940ReferenceFields</DataGroup>
+						<DataSource>BankStmtISOReportEntry</DataSource>
+					</AxFormControl>
+				</Controls>
+				<ColumnsMode>Fill</ColumnsMode>
+			</FormControl>
+			<Parent>LineDetailsTabs</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

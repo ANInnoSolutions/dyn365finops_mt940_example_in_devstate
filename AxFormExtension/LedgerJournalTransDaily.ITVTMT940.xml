@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>LedgerJournalTransDaily.ITVTMT940</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlfrg0eqvd1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>LedgerJournalTrans_ITVTMT940ReadyForPosting</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTMT940ReadyForPosting</DataField>
+				<DataSource>LedgerJournalTrans</DataSource>
+			</FormControl>
+			<Parent>overviewGrid</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>ErrorExist</PreviousSibling>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts>
+		<AxFormExtensionPartReference xmlns="">
+			<Name>FormExtensionPartReferenceaps2utl41</Name>
+			<FormPartReference>
+				<Name>ITVTMT940References</Name>
+				<DataSource>LedgerJournalTrans</DataSource>
+				<DataSourceRelation>SelfLink</DataSourceRelation>
+				<MenuItemName>ITVTMT940LedgerTransFactBox</MenuItemName>
+			</FormPartReference>
+		</AxFormExtensionPartReference>
+	</Parts>
+	<PropertyModifications />
+</AxFormExtension>
