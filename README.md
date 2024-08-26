@@ -18,7 +18,7 @@ It is not recommended to use this unfinished solution in a productive environmen
 This solution should only be deployed and handled by experienced users with technical know-how within this area. The functional processes should only be handled by experienced users within Microsoft Dynamics 365 as it provides standalone features such as correlations with default features.
 
 ## License
-The MIT License (MIT) Copyright © 2022 Inno | Solutions, Inh. Alexander Nassl
+The MIT License (MIT) Copyright © 2023 Inno | Solutions, Inh. Alexander Nassl
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
